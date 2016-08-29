@@ -9,6 +9,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 
 import com.eoss.application.catchme_fix4.R;
@@ -16,7 +17,13 @@ import com.eoss.application.catchme_fix4.fragment.FavFragment;
 import com.eoss.application.catchme_fix4.fragment.NearbyFragment;
 import com.eoss.application.catchme_fix4.fragment.ProfileFragment;
 import com.eoss.application.catchme_fix4.fragment.SettingFragment;
+import com.facebook.AccessToken;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
 import com.parse.ParseUser;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +57,36 @@ public class AppActivity extends AppCompatActivity {
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
         setupTabIcons();
+
+        //Code get user profile from face book
+        Bundle params = new Bundle();
+        params.putString("fields", "id,email,gender,cover,picture.type(large),first_name,last_name");
+        new GraphRequest(AccessToken.getCurrentAccessToken(), "me", params, HttpMethod.GET,
+                new GraphRequest.Callback() {
+                    @Override
+                    public void onCompleted(GraphResponse response) {
+                        if (response != null) {
+                            try {
+                                JSONObject data = response.getJSONObject();
+                                if (data.has("picture")) {
+                                    String profilePicUrl = data.getJSONObject("picture").getJSONObject("data").getString("url");
+                                    String email = data.getString("email");
+                                    String first_name = data.getString("first_name");
+                                    String last_name = data.getString("last_name");
+                                    String gender = data.getString("gender");
+
+                                    Log.d("url:::>",profilePicUrl);
+                                    Log.d("email:::>",email.toString());
+                                    Log.d("first_name:::>",first_name.toString());
+                                    Log.d("last_name:::>",last_name.toString());
+                                    Log.d("gender:::>",gender.toString());
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }).executeAsync();
     }
 
     private void setupTabIcons() {
@@ -106,4 +143,6 @@ public class AppActivity extends AppCompatActivity {
             return null;
         }
     }
+
+
 }
