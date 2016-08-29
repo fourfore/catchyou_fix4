@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.eoss.application.catchme_fix4.R;
+import com.eoss.application.catchme_fix4.fragment.FavFragment;
 import com.eoss.application.catchme_fix4.fragment.NearbyFragment;
 import com.eoss.application.catchme_fix4.fragment.ProfileFragment;
 import com.eoss.application.catchme_fix4.fragment.SettingFragment;
@@ -26,6 +27,12 @@ public class AppActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private TabLayout tabLayout;
     private ViewPager viewPager;
+    private int[] tabIcons = {
+            R.drawable.ic_account_circle_white_24dp,
+            R.drawable.ic_face_white_24dp,
+            R.drawable.ic_favorite_white_24dp,
+            R.drawable.ic_settings_white_24dp
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,12 +49,21 @@ public class AppActivity extends AppCompatActivity {
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
+        setupTabIcons();
+    }
+
+    private void setupTabIcons() {
+        tabLayout.getTabAt(0).setIcon(tabIcons[0]);
+        tabLayout.getTabAt(1).setIcon(tabIcons[1]);
+        tabLayout.getTabAt(2).setIcon(tabIcons[2]);
+        tabLayout.getTabAt(3).setIcon(tabIcons[3]);
     }
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new ProfileFragment(), "Profile");
         adapter.addFragment(new NearbyFragment(), "NearBy");
+        adapter.addFragment(new FavFragment(), "Fav");
         adapter.addFragment(new SettingFragment(), "Setting");
         viewPager.setAdapter(adapter);
     }
@@ -86,7 +102,8 @@ public class AppActivity extends AppCompatActivity {
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return mFragmentTitleList.get(position);
+            //return mFragmentTitleList.get(position);
+            return null;
         }
     }
 }

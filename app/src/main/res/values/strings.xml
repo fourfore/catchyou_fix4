@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">CatchMe</string>
+    <string name="app_name">Catch You</string>
     <string name="facebook_app_id">1081103531978645</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
