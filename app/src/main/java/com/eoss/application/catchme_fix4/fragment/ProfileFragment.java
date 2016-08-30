@@ -3,6 +3,7 @@ package com.eoss.application.catchme_fix4.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -23,6 +24,7 @@ import com.parse.ParseUser;
 import com.parse.SaveCallback;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -35,6 +37,8 @@ import java.util.Map;
 public class ProfileFragment extends Fragment {
     //private Map<String, String> facebookInfo = new HashMap<String, String>();
     private RecyclerView recyclerView;
+    private SwipeRefreshLayout swipeContainer;
+
     public ProfileFragment() {
         // Required empty public constructor
     }
@@ -45,19 +49,38 @@ public class ProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
-//        recyclerView=(RecyclerView)view.findViewById(R.id.profile_RecyclerView);
-//
-//        LinearLayoutManager llm = new LinearLayoutManager(getContext());
-//        recyclerView.setLayoutManager(llm);
-//        recyclerView.setHasFixedSize(true);
-//        ProfileAdapter adapter = new ProfileAdapter(ParseUser.getCurrentUser());
-//        recyclerView.setAdapter(adapter);
+
+        swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
+        // Setup refresh listener which triggers new data loading
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                pushDatatoFragment();
+                swipeContainer.setRefreshing(false);
+            }
+        });
+        // Configure the refreshing colors
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+
         return view;
     }
+
+
+
 
     @Override
     public void onStart(){
         super.onStart();
+        pushDatatoFragment();
+        Log.d("OnStart","OnStart");
+
+
+    }
+    public void pushDatatoFragment()
+    {
         Bundle params = new Bundle();
         params.putString("fields", "id,email,gender,cover,picture.type(large),first_name,last_name");
         new GraphRequest(AccessToken.getCurrentAccessToken(), "me", params, HttpMethod.GET,
@@ -104,7 +127,12 @@ public class ProfileFragment extends Fragment {
                                             Log.d("Saved successfully", "User update saved!");
                                             recyclerView=(RecyclerView)getView().findViewById(R.id.profile_RecyclerView);
 
-                                            LinearLayoutManager llm = new LinearLayoutManager(getContext());
+                                            LinearLayoutManager llm = new LinearLayoutManager(getContext()) {
+                                                @Override
+                                                public boolean canScrollVertically() {
+                                                    return false;
+                                                }
+                                            };
                                             recyclerView.setLayoutManager(llm);
                                             recyclerView.setHasFixedSize(true);
                                             ProfileAdapter adapter = new ProfileAdapter(ParseUser.getCurrentUser(),getContext());
@@ -122,16 +150,6 @@ public class ProfileFragment extends Fragment {
                         }
                     }
                 }).executeAsync();
-//        recyclerView=(RecyclerView)getView().findViewById(R.id.profile_RecyclerView);
-//
-//        LinearLayoutManager llm = new LinearLayoutManager(getContext());
-//        recyclerView.setLayoutManager(llm);
-//        recyclerView.setHasFixedSize(true);
-//        ProfileAdapter adapter = new ProfileAdapter(ParseUser.getCurrentUser(),getContext());
-//        recyclerView.setAdapter(adapter);
-        Log.d("OnStart","OnStart");
-
-
     }
 
 
