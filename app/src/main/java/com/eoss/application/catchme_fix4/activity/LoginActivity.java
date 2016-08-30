@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-
 import com.eoss.application.catchme_fix4.R;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
