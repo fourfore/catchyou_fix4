@@ -45,53 +45,53 @@ public class LoginActivity extends AppCompatActivity {
                                 //
 
                                 //Code get user profile from face book
-                                Bundle params = new Bundle();
-                                params.putString("fields", "id,email,gender,cover,picture.type(large),first_name,last_name");
-                                new GraphRequest(AccessToken.getCurrentAccessToken(), "me", params, HttpMethod.GET,
-                                        new GraphRequest.Callback() {
-                                            @Override
-                                            public void onCompleted(GraphResponse response) {
-                                                if (response != null) {
-                                                    try {
-                                                        ParseUser currentUser = ParseUser.getCurrentUser();
-                                                        JSONObject data = response.getJSONObject();
-                                                        Log.d("foretest",data.toString());
-                                                        if (data.has("picture")) {
-                                                            String profilePicUrl = data.getJSONObject("picture").getJSONObject("data").getString("url");
-                                                            currentUser = ParseUser.getCurrentUser();
-                                                            currentUser.put("profilePicUrl",profilePicUrl);
-                                                            currentUser.saveInBackground();
-                                                            Log.d("ProfilePic URL-> ", profilePicUrl);
-
-                                                        }
-                                                        if (data.has("gender")) {
-                                                            String gender = data.getString("gender");
-                                                            currentUser.put("gender",gender);
-                                                            currentUser.saveInBackground();
-                                                            Log.d("gender-> ", gender);
-
-                                                        }
-                                                        //age
-//                                if (data.has("birthday")) {
-//                                    String birthday = data.getString("birthday");
-//                                    currentUser.put("age",gender);
-//                                    currentUser.saveInBackground();
-//                                }
-                                                        //facebook name
-                                                        if (data.has("first_name")) {
-                                                            String faceName = data.getString("first_name");
-                                                            currentUser.put("faceName",faceName);
-                                                            currentUser.saveInBackground();
-
-                                                        }
-
-
-                                                    } catch (Exception e) {
-                                                        e.printStackTrace();
-                                                    }
-                                                }
-                                            }
-                                        }).executeAsync();
+//                                Bundle params = new Bundle();
+//                                params.putString("fields", "id,email,gender,cover,picture.type(large),first_name,last_name");
+//                                new GraphRequest(AccessToken.getCurrentAccessToken(), "me", params, HttpMethod.GET,
+//                                        new GraphRequest.Callback() {
+//                                            @Override
+//                                            public void onCompleted(GraphResponse response) {
+//                                                if (response != null) {
+//                                                    try {
+//                                                        ParseUser currentUser = ParseUser.getCurrentUser();
+//                                                        JSONObject data = response.getJSONObject();
+//                                                        Log.d("foretest",data.toString());
+//                                                        if (data.has("picture")) {
+//                                                            String profilePicUrl = data.getJSONObject("picture").getJSONObject("data").getString("url");
+//                                                            currentUser = ParseUser.getCurrentUser();
+//                                                            currentUser.put("profilePicUrl",profilePicUrl);
+//                                                            currentUser.saveInBackground();
+//                                                            Log.d("ProfilePic URL-> ", profilePicUrl);
+//
+//                                                        }
+//                                                        if (data.has("gender")) {
+//                                                            String gender = data.getString("gender");
+//                                                            currentUser.put("gender",gender);
+//                                                            currentUser.saveInBackground();
+//                                                            Log.d("gender-> ", gender);
+//
+//                                                        }
+//                                                        //age
+////                                if (data.has("birthday")) {
+////                                    String birthday = data.getString("birthday");
+////                                    currentUser.put("age",gender);
+////                                    currentUser.saveInBackground();
+////                                }
+//                                                        //facebook name
+//                                                        if (data.has("first_name")) {
+//                                                            String faceName = data.getString("first_name");
+//                                                            currentUser.put("faceName",faceName);
+//                                                            currentUser.saveInBackground();
+//
+//                                                        }
+//
+//
+//                                                    } catch (Exception e) {
+//                                                        e.printStackTrace();
+//                                                    }
+//                                                }
+//                                            }
+//                                        }).executeAsync();
                                 //
                                 Intent intent = new Intent(LoginActivity.this,AppActivity.class);
                                 startActivity(intent);
