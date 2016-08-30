@@ -21,11 +21,15 @@ import com.squareup.picasso.Picasso;
 
 import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * A simple {@link Fragment} subclass.
  */
 public class ProfileFragment extends Fragment {
-
+    private Map<String, String> facebookInfo = new HashMap<String, String>();
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -52,51 +56,51 @@ public class ProfileFragment extends Fragment {
 //        request.setParameters(parameters);
 //        request.executeAsync();
 
-        Bundle params = new Bundle();
-        params.putString("fields", "id,first_name,email,gender,cover,picture.type(large)");
-        new GraphRequest(AccessToken.getCurrentAccessToken(), "me", params, HttpMethod.GET,
-                new GraphRequest.Callback() {
-                    @Override
-                    public void onCompleted(GraphResponse response) {
-                        if (response != null) {
-                            try {
-                                ParseUser currentUser = ParseUser.getCurrentUser();
-                                JSONObject data = response.getJSONObject();
-                                Log.d("foretest",data.toString());
-                                if (data.has("picture")) {
-                                    String profilePicUrl = data.getJSONObject("picture").getJSONObject("data").getString("url");
-                                    currentUser = ParseUser.getCurrentUser();
-                                    currentUser.put("profilePicUrl",profilePicUrl);
-                                    currentUser.saveInBackground();
-                                    Log.d("ProfilePic URL-> ", profilePicUrl);
-                                }
-                                if (data.has("gender")) {
-                                    String gender = data.getString("gender");
-                                    currentUser.put("gender",gender);
-                                    currentUser.saveInBackground();
-                                    Log.d("gender-> ", gender);
-                                }
-                                //age
-//                                if (data.has("birthday")) {
-//                                    String birthday = data.getString("birthday");
-//                                    currentUser.put("age",gender);
+//        Bundle params = new Bundle();
+//        params.putString("fields", "id,email,gender,cover,picture.type(large),first_name,last_name");
+//        new GraphRequest(AccessToken.getCurrentAccessToken(), "me", params, HttpMethod.GET,
+//                new GraphRequest.Callback() {
+//                    @Override
+//                    public void onCompleted(GraphResponse response) {
+//                        if (response != null) {
+//                            try {
+//                                ParseUser currentUser = ParseUser.getCurrentUser();
+//                                JSONObject data = response.getJSONObject();
+//                                Log.d("foretest",data.toString());
+//                                if (data.has("picture")) {
+//                                    String profilePicUrl = data.getJSONObject("picture").getJSONObject("data").getString("url");
+//                                    currentUser = ParseUser.getCurrentUser();
+//                                    currentUser.put("profilePicUrl",profilePicUrl);
+//                                    currentUser.saveInBackground();
+//                                    Log.d("ProfilePic URL-> ", profilePicUrl);
+//                                }
+//                                if (data.has("gender")) {
+//                                    String gender = data.getString("gender");
+//                                    currentUser.put("gender",gender);
+//                                    currentUser.saveInBackground();
+//                                    Log.d("gender-> ", gender);
+//                                }
+//                                //age
+////                                if (data.has("birthday")) {
+////                                    String birthday = data.getString("birthday");
+////                                    currentUser.put("age",gender);
+////                                    currentUser.saveInBackground();
+////                                }
+//                                //facebook name
+//                                if (data.has("first_name")) {
+//                                    String faceName = data.getString("first_name");
+//                                    currentUser.put("faceName",faceName);
 //                                    currentUser.saveInBackground();
 //                                }
-                                //facebook name
-                                if (data.has("first_name")) {
-                                    String faceName = data.getString("first_name");
-                                    currentUser.put("faceName",faceName);
-                                    currentUser.saveInBackground();
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                }).executeAsync();
+//                            } catch (Exception e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    }
+//                }).executeAsync();
 
 
-        // Inflate the layout for this fragment
+         //Inflate the layout for this fragment
 
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
         ParseUser currentUser = ParseUser.getCurrentUser();
@@ -111,6 +115,20 @@ public class ProfileFragment extends Fragment {
         imageView = (ImageView)view.findViewById(R.id.user_profile_photo);
         Picasso.with(inflater.getContext()).load(ParseUser.getCurrentUser().getString("profilePicUrl")).into(imageView);
         return view;
+//        Log.d("Fore-Facename",facebookInfo.get("facebook"));
+//        View view = inflater.inflate(R.layout.fragment_profile, container, false);
+//        ParseUser currentUser = ParseUser.getCurrentUser();
+//        TextView textView = (TextView) view.findViewById(R.id.user_profile_name);
+//        textView.setText((String)facebookInfo.get("facebook"));
+//        if((String)facebookInfo.get("gender") != null) {
+//            textView = (TextView) view.findViewById(R.id.user_gender);
+//            textView.setText("SEX : " + (facebookInfo.get("gender")).toUpperCase());
+//        }
+//        ImageView imageView = (ImageView)view.findViewById(R.id.header_cover_image);
+//        Picasso.with(inflater.getContext()).load(ParseUser.getCurrentUser().getString("profilePicUrl")).into(imageView);
+//        imageView = (ImageView)view.findViewById(R.id.user_profile_photo);
+//        Picasso.with(inflater.getContext()).load(ParseUser.getCurrentUser().getString("profilePicUrl")).into(imageView);
+//        return view;
     }
 
     @Override
@@ -129,4 +147,8 @@ public class ProfileFragment extends Fragment {
 //        Picasso.with(inflater.getContext()).load(ParseUser.getCurrentUser().getString("profilePicUrl")).into(imageView);
     }
 
+
+    public void setFacebookInfo(Map facebookInfo) {
+        this.facebookInfo = facebookInfo;
+    }
 }

@@ -25,8 +25,11 @@ import com.parse.ParseUser;
 
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -36,6 +39,7 @@ import com.google.android.gms.location.LocationServices;
 
 public class AppActivity extends AppCompatActivity implements
         ConnectionCallbacks, OnConnectionFailedListener{
+    private Map<String, String> facebookInfo = new HashMap<String, String>();
 
     protected static final String TAG = "AppActivity";
 
@@ -65,6 +69,9 @@ public class AppActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+
+
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -73,41 +80,13 @@ public class AppActivity extends AppCompatActivity implements
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
 
+
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
         setupTabIcons();
 
 
         buildGoogleApiClient();
-        //Code get user profile from face book
-        Bundle params = new Bundle();
-        params.putString("fields", "id,email,gender,cover,picture.type(large),first_name,last_name");
-        new GraphRequest(AccessToken.getCurrentAccessToken(), "me", params, HttpMethod.GET,
-                new GraphRequest.Callback() {
-                    @Override
-                    public void onCompleted(GraphResponse response) {
-                        if (response != null) {
-                            try {
-                                JSONObject data = response.getJSONObject();
-                                if (data.has("picture")) {
-                                    String profilePicUrl = data.getJSONObject("picture").getJSONObject("data").getString("url");
-                                    String email = data.getString("email");
-                                    String first_name = data.getString("first_name");
-                                    String last_name = data.getString("last_name");
-                                    String gender = data.getString("gender");
-
-                                    Log.d("url:::>",profilePicUrl);
-                                    Log.d("email:::>",email.toString());
-                                    Log.d("first_name:::>",first_name.toString());
-                                    Log.d("last_name:::>",last_name.toString());
-                                    Log.d("gender:::>",gender.toString());
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                }).executeAsync();
 
 
 
@@ -123,7 +102,10 @@ public class AppActivity extends AppCompatActivity implements
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new ProfileFragment(), "Profile");
+        ProfileFragment profileFragment= new  ProfileFragment();
+        profileFragment.setFacebookInfo(this.facebookInfo);
+        adapter.addFragment(profileFragment, "Profile");
+
         adapter.addFragment(new NearbyFragment(), "NearBy");
         adapter.addFragment(new FavFragment(), "Fav");
         adapter.addFragment(new SettingFragment(), "Setting");
@@ -230,5 +212,8 @@ public class AppActivity extends AppCompatActivity implements
         Log.i(TAG, "Connection suspended");
         mGoogleApiClient.connect();
     }
+
+
+
 
 }
