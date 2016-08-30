@@ -44,8 +44,6 @@ public class AppActivity extends AppCompatActivity implements
      */
     protected GoogleApiClient mGoogleApiClient;
     protected Location mLastLocation;
-    protected String mLatitudeLabel;
-    protected String mLongitudeLabel;
     protected String mLatitudeText;
     protected String mLongitudeText;
 
@@ -77,8 +75,9 @@ public class AppActivity extends AppCompatActivity implements
         tabLayout.setupWithViewPager(viewPager);
         setupTabIcons();
 
-
+        //buildGoogleApiClient
         buildGoogleApiClient();
+
         //Code get user profile from face book
         Bundle params = new Bundle();
         params.putString("fields", "id,email,gender,cover,picture.type(large),first_name,last_name");
