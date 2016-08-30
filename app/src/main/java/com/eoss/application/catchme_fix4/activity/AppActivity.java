@@ -12,6 +12,8 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 import com.eoss.application.catchme_fix4.R;
 import com.eoss.application.catchme_fix4.fragment.FavFragment;
 import com.eoss.application.catchme_fix4.fragment.NearbyFragment;
@@ -21,11 +23,15 @@ import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
 import com.parse.ParseUser;
 
 import org.json.JSONObject;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -35,19 +41,23 @@ import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListe
 import com.google.android.gms.location.LocationServices;
 
 public class AppActivity extends AppCompatActivity implements
-        ConnectionCallbacks, OnConnectionFailedListener{
-
-    protected static final String TAG = "AppActivity";
-
-    /**
-     * Provides the entry point to Google Play services.
-     */
+        ConnectionCallbacks, OnConnectionFailedListener, LocationListener {
+    //Google location Variable
+    protected static final String TAG = "location-updates-sample";
+    public static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
+    public static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
+            UPDATE_INTERVAL_IN_MILLISECONDS / 2;
+    protected final static String REQUESTING_LOCATION_UPDATES_KEY = "requesting-location-updates-key";
+    protected final static String LOCATION_KEY = "location-key";
+    protected final static String LAST_UPDATED_TIME_STRING_KEY = "last-updated-time-string-key";
     protected GoogleApiClient mGoogleApiClient;
-    protected Location mLastLocation;
-    protected String mLatitudeText;
-    protected String mLongitudeText;
+    protected LocationRequest mLocationRequest;
+    protected Location mCurrentLocation;
+    protected Button mStartUpdatesButton;
+    protected Boolean mRequestingLocationUpdates;
+    protected String mLastUpdateTime;
 
-
+    // Fragment Variable
     private Toolbar toolbar;
     private TabLayout tabLayout;
     private ViewPager viewPager;
@@ -75,7 +85,12 @@ public class AppActivity extends AppCompatActivity implements
         tabLayout.setupWithViewPager(viewPager);
         setupTabIcons();
 
-        //buildGoogleApiClient
+
+        //Google Location initial
+        mStartUpdatesButton = (Button) findViewById(R.id.button);
+        mRequestingLocationUpdates = false;
+        mLastUpdateTime = "";
+        updateValuesFromBundle(savedInstanceState);
         buildGoogleApiClient();
 
         //Code get user profile from face book
@@ -167,15 +182,162 @@ public class AppActivity extends AppCompatActivity implements
             return null;
         }
     }
+
+
     /**
-     * Builds a GoogleApiClient. Uses the addApi() method to request the LocationServices API.
+     * Updates fields based on data stored in the bundle.
+     *
+     * @param savedInstanceState The activity state saved in the Bundle.
+     */
+    private void updateValuesFromBundle(Bundle savedInstanceState) {
+        Log.i(TAG, "Updating values from bundle");
+        if (savedInstanceState != null) {
+            // Update the value of mRequestingLocationUpdates from the Bundle, and make sure that
+            // the Start Updates and Stop Updates buttons are correctly enabled or disabled.
+            if (savedInstanceState.keySet().contains(REQUESTING_LOCATION_UPDATES_KEY)) {
+                mRequestingLocationUpdates = savedInstanceState.getBoolean(
+                        REQUESTING_LOCATION_UPDATES_KEY);
+                setButtonsEnabledState();
+            }
+
+            // Update the value of mCurrentLocation from the Bundle and update the UI to show the
+            // correct latitude and longitude.
+            if (savedInstanceState.keySet().contains(LOCATION_KEY)) {
+                // Since LOCATION_KEY was found in the Bundle, we can be sure that mCurrentLocation
+                // is not null.
+                mCurrentLocation = savedInstanceState.getParcelable(LOCATION_KEY);
+            }
+
+            // Update the value of mLastUpdateTime from the Bundle and update the UI.
+            if (savedInstanceState.keySet().contains(LAST_UPDATED_TIME_STRING_KEY)) {
+                mLastUpdateTime = savedInstanceState.getString(LAST_UPDATED_TIME_STRING_KEY);
+            }
+            updateUI();
+        }
+    }
+
+    /**
+     * Builds a GoogleApiClient. Uses the {@code #addApi} method to request the
+     * LocationServices API.
      */
     protected synchronized void buildGoogleApiClient() {
+        Log.i(TAG, "Building GoogleApiClient");
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
+        createLocationRequest();
+    }
+
+    /**
+     * Sets up the location request. Android has two location request settings:
+     * {@code ACCESS_COARSE_LOCATION} and {@code ACCESS_FINE_LOCATION}. These settings control
+     * the accuracy of the current location. This sample uses ACCESS_FINE_LOCATION, as defined in
+     * the AndroidManifest.xml.
+     * <p/>
+     * When the ACCESS_FINE_LOCATION setting is specified, combined with a fast update
+     * interval (5 seconds), the Fused Location Provider API returns location updates that are
+     * accurate to within a few feet.
+     * <p/>
+     * These settings are appropriate for mapping applications that show real-time location
+     * updates.
+     */
+    protected void createLocationRequest() {
+        mLocationRequest = new LocationRequest();
+
+        // Sets the desired interval for active location updates. This interval is
+        // inexact. You may not receive updates at all if no location sources are available, or
+        // you may receive them slower than requested. You may also receive updates faster than
+        // requested if other applications are requesting location at a faster interval.
+        mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
+
+        // Sets the fastest rate for active location updates. This interval is exact, and your
+        // application will never receive updates faster than this value.
+        mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
+
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    }
+
+    /**
+     * Handles the Start Updates button and requests start of location updates. Does nothing if
+     * updates have already been requested.
+     */
+    public void startUpdatesButtonHandler(View view) {
+        if (!mRequestingLocationUpdates) {
+            mRequestingLocationUpdates = true;
+            //setButtonsEnabledState();
+            startLocationUpdates();
+        }
+    }
+
+    /**
+     * Handles the Stop Updates button, and requests removal of location updates. Does nothing if
+     * updates were not previously requested.
+     */
+    public void stopUpdatesButtonHandler(View view) {
+        if (mRequestingLocationUpdates) {
+            mRequestingLocationUpdates = false;
+            //setButtonsEnabledState();
+            stopLocationUpdates();
+        }
+    }
+
+    /**
+     * Requests location updates from the FusedLocationApi.
+     */
+    protected void startLocationUpdates() {
+        // The final argument to {@code requestLocationUpdates()} is a LocationListener
+        // (http://developer.android.com/reference/com/google/android/gms/location/LocationListener.html).
+        LocationServices.FusedLocationApi.requestLocationUpdates(
+                mGoogleApiClient, mLocationRequest, this);
+    }
+
+    /**
+     * Ensures that only one button is enabled at any time. The Start Updates button is enabled
+     * if the user is not requesting location updates. The Stop Updates button is enabled if the
+     * user is requesting location updates.
+     */
+    private void setButtonsEnabledState() {
+        if (mRequestingLocationUpdates) {
+            mStartUpdatesButton.setEnabled(false);
+            //mStopUpdatesButton.setEnabled(true);
+        } else {
+            mStartUpdatesButton.setEnabled(true);
+            //mStopUpdatesButton.setEnabled(false);
+        }
+    }
+
+    /**
+     * Updates the latitude, the longitude, and the last location time in the UI.
+     */
+    private void updateUI() {
+
+        if (mCurrentLocation != null) {
+
+
+            Log.d("lat::>" + mCurrentLocation.getLatitude(),"long::>" + mCurrentLocation.getLongitude());
+            mRequestingLocationUpdates = false;
+            //setButtonsEnabledState();
+            stopLocationUpdates();
+
+        } else {
+            Log.d("lat::>null","long::>null");
+        }
+
+    }
+
+    /**
+     * Removes location updates from the FusedLocationApi.
+     */
+    protected void stopLocationUpdates() {
+        // It is a good practice to remove location requests when the activity is in a paused or
+        // stopped state. Doing so helps battery performance and is especially
+        // recommended in applications that request frequent location updates.
+
+        // The final argument to {@code requestLocationUpdates()} is a LocationListener
+        // (http://developer.android.com/reference/com/google/android/gms/location/LocationListener.html).
+        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
     }
 
     @Override
@@ -185,11 +347,31 @@ public class AppActivity extends AppCompatActivity implements
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        if (mGoogleApiClient.isConnected()) {
-            mGoogleApiClient.disconnect();
+    public void onResume() {
+        super.onResume();
+        // Within {@code onPause()}, we pause location updates, but leave the
+        // connection to GoogleApiClient intact.  Here, we resume receiving
+        // location updates if the user has requested them.
+
+        if (mGoogleApiClient.isConnected() && mRequestingLocationUpdates) {
+            startLocationUpdates();
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Stop location updates to save battery, but don't disconnect the GoogleApiClient object.
+        if (mGoogleApiClient.isConnected()) {
+            stopLocationUpdates();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        mGoogleApiClient.disconnect();
+
+        super.onStop();
     }
 
     /**
@@ -197,21 +379,50 @@ public class AppActivity extends AppCompatActivity implements
      */
     @Override
     public void onConnected(Bundle connectionHint) {
-        // Provides a simple way of getting a device's location and is well suited for
-        // applications that do not require a fine-grained location and that do not need location
-        // updates. Gets the best and most recent location currently available, which may be null
-        // in rare cases when a location is not available.
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        if (mLastLocation != null) {
-            mLatitudeText = (String.valueOf(mLastLocation.getLatitude()));
+        Log.i(TAG, "Connected to GoogleApiClient");
 
-            mLongitudeText = (String.valueOf(mLastLocation.getLongitude()));
+        // If the initial location was never previously requested, we use
+        // FusedLocationApi.getLastLocation() to get it. If it was previously requested, we store
+        // its value in the Bundle and check for it in onCreate(). We
+        // do not request it again unless the user specifically requests location updates by pressing
+        // the Start Updates button.
+        //
+        // Because we cache the value of the initial location in the Bundle, it means that if the
+        // user launches the activity,
+        // moves to a new location, and then changes the device orientation, the original location
+        // is displayed as the activity is re-created.
+        if (mCurrentLocation == null) {
+            mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
-            Log.d("lat::>" + mLatitudeText,"long::>" + mLongitudeText);
-
-        } else {
-            Log.d("lat::>null","long::>null");
+            updateUI();
         }
+
+        // If the user presses the Start Updates button before GoogleApiClient connects, we set
+        // mRequestingLocationUpdates to true (see startUpdatesButtonHandler()). Here, we check
+        // the value of mRequestingLocationUpdates and if it is true, we start location updates.
+        if (mRequestingLocationUpdates) {
+            startLocationUpdates();
+        }
+    }
+
+    /**
+     * Callback that fires when the location changes.
+     */
+    @Override
+    public void onLocationChanged(Location location) {
+        mCurrentLocation = location;
+        mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+        updateUI();
+        Toast.makeText(this, getResources().getString(R.string.location_updated_message),
+                Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onConnectionSuspended(int cause) {
+        // The connection to Google Play services was lost for some reason. We call connect() to
+        // attempt to re-establish the connection.
+        Log.i(TAG, "Connection suspended");
+        mGoogleApiClient.connect();
     }
 
     @Override
@@ -222,12 +433,15 @@ public class AppActivity extends AppCompatActivity implements
     }
 
 
-    @Override
-    public void onConnectionSuspended(int cause) {
-        // The connection to Google Play services was lost for some reason. We call connect() to
-        // attempt to re-establish the connection.
-        Log.i(TAG, "Connection suspended");
-        mGoogleApiClient.connect();
+    /**
+     * Stores activity data in the Bundle.
+     */
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putBoolean(REQUESTING_LOCATION_UPDATES_KEY, mRequestingLocationUpdates);
+        savedInstanceState.putParcelable(LOCATION_KEY, mCurrentLocation);
+        savedInstanceState.putString(LAST_UPDATED_TIME_STRING_KEY, mLastUpdateTime);
+        super.onSaveInstanceState(savedInstanceState);
     }
-
 }
+
+
