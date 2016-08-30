@@ -97,15 +97,15 @@ public class ProfileFragment extends Fragment {
 
 
         // Inflate the layout for this fragment
-        ParseUser currentUser = ParseUser.getCurrentUser();
-        View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
+        View view = inflater.inflate(R.layout.fragment_profile, container, false);
+        ParseUser currentUser = ParseUser.getCurrentUser();
         TextView textView = (TextView) view.findViewById(R.id.user_profile_name);
         textView.setText(currentUser.getString("faceName"));
-
-        textView = (TextView) view.findViewById(R.id.user_gender);
-        textView.setText("SEX : "+currentUser.getString("gender").toUpperCase());
-
+        if(currentUser.getString("gender") != null) {
+            textView = (TextView) view.findViewById(R.id.user_gender);
+            textView.setText("SEX : " + currentUser.getString("gender").toUpperCase());
+        }
         ImageView imageView = (ImageView)view.findViewById(R.id.header_cover_image);
         Picasso.with(inflater.getContext()).load(ParseUser.getCurrentUser().getString("profilePicUrl")).into(imageView);
         imageView = (ImageView)view.findViewById(R.id.user_profile_photo);
@@ -113,5 +113,20 @@ public class ProfileFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onStart(){
+        super.onStart();
+//        ParseUser currentUser = ParseUser.getCurrentUser();
+//        TextView textView = (TextView) getView().findViewById(R.id.user_profile_name);
+//        textView.setText(currentUser.getString("faceName"));
+//        if(currentUser.getString("gender") != null) {
+//            textView = (TextView) getView().findViewById(R.id.user_gender);
+//            textView.setText("SEX : " + currentUser.getString("gender").toUpperCase());
+//        }
+//        ImageView imageView = (ImageView)getView().findViewById(R.id.header_cover_image);
+//        Picasso.with(inflater.getContext()).load(ParseUser.getCurrentUser().getString("profilePicUrl")).into(imageView);
+//        imageView = (ImageView)view.findViewById(R.id.user_profile_photo);
+//        Picasso.with(inflater.getContext()).load(ParseUser.getCurrentUser().getString("profilePicUrl")).into(imageView);
+    }
 
 }
