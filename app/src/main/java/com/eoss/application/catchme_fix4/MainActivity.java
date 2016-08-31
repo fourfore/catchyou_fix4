@@ -3,6 +3,7 @@ package com.eoss.application.catchme_fix4;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.location.LocationManager;
 import android.os.Bundle;
 import com.eoss.application.catchme_fix4.activity.AppActivity;
 import com.eoss.application.catchme_fix4.activity.LoginActivity;
@@ -82,7 +83,6 @@ public class MainActivity extends Activity {
 
         }
     }
-
 
 
 }
