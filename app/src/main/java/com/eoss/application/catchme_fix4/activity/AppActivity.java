@@ -75,6 +75,7 @@ public class AppActivity extends AppCompatActivity implements
     private Toolbar toolbar;
     private TabLayout tabLayout;
     private ViewPager viewPager;
+    ViewPagerAdapter adapter;
     private int[] tabIcons = {
             R.drawable.ic_account_circle_white_24dp,
             R.drawable.ic_face_white_24dp,
@@ -94,6 +95,8 @@ public class AppActivity extends AppCompatActivity implements
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
+        //how to get another fragment
+        //FavFragment favFragment = (FavFragment)adapter.getItem(2);
         viewPager.setOffscreenPageLimit(3);
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
@@ -196,7 +199,7 @@ public class AppActivity extends AppCompatActivity implements
     }
 
     private void setupViewPager(ViewPager viewPager) {
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new ProfileFragment(), "Profile");
         adapter.addFragment(new NearbyFragment(), "NearBy");
         adapter.addFragment(new FavFragment(), "Fav");
