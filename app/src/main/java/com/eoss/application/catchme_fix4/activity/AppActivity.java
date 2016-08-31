@@ -37,8 +37,12 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStates;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.parse.FindCallback;
+import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import org.json.JSONObject;
@@ -53,6 +57,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.location.LocationServices;
+import com.parse.SaveCallback;
 
 public class AppActivity extends AppCompatActivity implements
         ConnectionCallbacks, OnConnectionFailedListener, LocationListener {
@@ -394,10 +399,38 @@ public class AppActivity extends AppCompatActivity implements
             stopLocationUpdates();
 
             //set in parse user
-            ParseUser currentUser = ParseUser.getCurrentUser();
+            final ParseUser currentUser = ParseUser.getCurrentUser();
             ParseGeoPoint point = new ParseGeoPoint(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
             currentUser.put("Location",point);
-            currentUser.saveInBackground();
+            currentUser.saveInBackground(new SaveCallback() {
+                public void done(ParseException e) {
+                    if (e == null) {
+                        // Saved successfully.
+                        Log.d("Saved successfully", "User update saved!");
+                        ParseGeoPoint userLocation = (ParseGeoPoint) currentUser.get("location");
+                        ParseQuery<ParseObject> query = ParseQuery.getQuery("PlaceObject");
+                        query.whereNear("location", userLocation);
+                        query.setLimit(10);
+                        query.findInBackground(new FindCallback<ParseObject>() {
+                            @Override
+                            public void done(List<ParseObject> objects, ParseException e) {
+                                Log.d("TESTESTTEST","TESTESTTEST");
+                                for(ParseObject parseObject : objects)
+                                {
+                                    ParseUser parseUser = (ParseUser)parseObject;
+                                    Log.d("printUser",parseUser.getString("faceName"));
+
+                                }
+                            }
+
+                            });
+//
+                    } else {
+                        // The save failed.
+                        Log.d("TAG", "User update error: " + e);
+                    }
+                }
+            });
 
         } else {
             Log.d("lat::>null","long::>null");
