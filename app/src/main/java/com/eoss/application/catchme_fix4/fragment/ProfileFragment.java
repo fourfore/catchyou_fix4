@@ -35,9 +35,11 @@ import java.util.Map;
  * A simple {@link Fragment} subclass.
  */
 public class ProfileFragment extends Fragment {
-    //private Map<String, String> facebookInfo = new HashMap<String, String>();
+
     private RecyclerView recyclerView;
     private SwipeRefreshLayout swipeContainer;
+    private LinearLayoutManager linearLayoutManager;
+    private ProfileAdapter adapter;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -49,22 +51,6 @@ public class ProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
-
-        swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
-        // Setup refresh listener which triggers new data loading
-        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                pushDatatoFragment();
-                swipeContainer.setRefreshing(false);
-            }
-        });
-        // Configure the refreshing colors
-        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
-
         return view;
     }
 
@@ -74,15 +60,50 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onStart(){
         super.onStart();
+        //***********Push data to Fragment
         pushDatatoFragment();
-        Log.d("OnStart","OnStart");
+
+        //***********Setup swipeContainer
+        // Setup refresh listener which triggers new data loading
+        swipeContainer = (SwipeRefreshLayout) getView().findViewById(R.id.swipeContainer);
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                pushDatatoFragment();
+                Log.d("RefreshListener2","RefreshListener");
+                swipeContainer.setRefreshing(false);
+            }
+        });
+        // Configure the refreshing colors
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+
+        //Log.d("OnStart","OnStart");
 
 
+    }
+
+    public void setUpAdapter(ParseUser data)
+    {
+        recyclerView=(RecyclerView)getView().findViewById(R.id.profile_RecyclerView);
+
+        linearLayoutManager = new LinearLayoutManager(getContext()) {
+            @Override
+            public boolean canScrollVertically() {
+                return false;
+            }
+        };
+        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setHasFixedSize(true);
+        adapter = new ProfileAdapter(data,getContext());
+        recyclerView.setAdapter(adapter);
     }
     public void pushDatatoFragment()
     {
         Bundle params = new Bundle();
-        params.putString("fields", "id,email,gender,cover,picture.type(large),first_name,last_name");
+        params.putString("fields","id,email,gender,cover,picture.type(large),first_name,last_name");
         new GraphRequest(AccessToken.getCurrentAccessToken(), "me", params, HttpMethod.GET,
                 new GraphRequest.Callback() {
                     @Override
@@ -91,7 +112,7 @@ public class ProfileFragment extends Fragment {
                             try {
                                 ParseUser currentUser = ParseUser.getCurrentUser();
                                 JSONObject data = response.getJSONObject();
-                                Log.d("foretest",data.toString());
+                                Log.d("foretest-data",data.toString());
                                 if (data.has("picture")) {
                                     String profilePicUrl = data.getJSONObject("picture").getJSONObject("data").getString("url");
                                     currentUser = ParseUser.getCurrentUser();
@@ -125,18 +146,8 @@ public class ProfileFragment extends Fragment {
                                         if (e == null) {
                                             // Saved successfully.
                                             Log.d("Saved successfully", "User update saved!");
-                                            recyclerView=(RecyclerView)getView().findViewById(R.id.profile_RecyclerView);
-
-                                            LinearLayoutManager llm = new LinearLayoutManager(getContext()) {
-                                                @Override
-                                                public boolean canScrollVertically() {
-                                                    return false;
-                                                }
-                                            };
-                                            recyclerView.setLayoutManager(llm);
-                                            recyclerView.setHasFixedSize(true);
-                                            ProfileAdapter adapter = new ProfileAdapter(ParseUser.getCurrentUser(),getContext());
-                                            recyclerView.setAdapter(adapter);
+                                            setUpAdapter(ParseUser.getCurrentUser());
+//
                                         } else {
                                             // The save failed.
                                             Log.d("TAG", "User update error: " + e);
