@@ -108,8 +108,11 @@ public class AppActivity extends AppCompatActivity implements
         mStartUpdatesButton = (Button) findViewById(R.id.button);
         mRequestingLocationUpdates = false;
         mLastUpdateTime = "";
-        updateValuesFromBundle(savedInstanceState);
+
+        Log.d("connect","google");
         buildGoogleApiClient();
+
+
 
 
         LocationRequest mLocationRequest = new LocationRequest();
@@ -260,7 +263,7 @@ public class AppActivity extends AppCompatActivity implements
             if (savedInstanceState.keySet().contains(REQUESTING_LOCATION_UPDATES_KEY)) {
                 mRequestingLocationUpdates = savedInstanceState.getBoolean(
                         REQUESTING_LOCATION_UPDATES_KEY);
-                setButtonsEnabledState();
+
             }
 
             // Update the value of mCurrentLocation from the Bundle and update the UI to show the
@@ -365,15 +368,15 @@ public class AppActivity extends AppCompatActivity implements
      * if the user is not requesting location updates. The Stop Updates button is enabled if the
      * user is requesting location updates.
      */
-    private void setButtonsEnabledState() {
-        if (mRequestingLocationUpdates) {
-            mStartUpdatesButton.setEnabled(false);
+    //private void setButtonsEnabledState() {
+       // if (mRequestingLocationUpdates) {
+            //mStartUpdatesButton.setEnabled(false);
             //mStopUpdatesButton.setEnabled(true);
-        } else {
-            mStartUpdatesButton.setEnabled(true);
+       // } else {
+          //  mStartUpdatesButton.setEnabled(true);
             //mStopUpdatesButton.setEnabled(false);
-        }
-    }
+       // }
+   // }
 
     /**
      * Updates the latitude, the longitude, and the last location time in the UI.
@@ -410,6 +413,7 @@ public class AppActivity extends AppCompatActivity implements
     @Override
     protected void onStart() {
         super.onStart();
+
         mGoogleApiClient.connect();
     }
 
