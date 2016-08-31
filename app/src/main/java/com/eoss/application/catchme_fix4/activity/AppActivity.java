@@ -415,12 +415,22 @@ public class AppActivity extends AppCompatActivity implements
                             @Override
                             public void done(List<ParseObject> objects, ParseException e) {
                                 Log.d("TESTESTTEST","TESTESTTEST");
-                                for(ParseObject parseObject : objects)
-                                {
-                                    ParseUser parseUser = (ParseUser)parseObject;
-                                    Log.d("printUser",parseUser.getString("faceName"));
+//                                for(ParseObject parseObject : objects)
+//                                {
+//                                    ParseUser parseUser = (ParseUser)parseObject;
+//                                    Log.d("printUser",parseUser.getString("faceName"));
+//
+//                                }
+                                ParseUser parseUser = (ParseUser)objects.get(0);
+                                parseUser.getString("FaceName");
+                                Log.d("printUser1",parseUser.getString("FaceName"));
+                                parseUser = (ParseUser)objects.get(1);
+                                parseUser.getString("FaceName");
+                                Log.d("printUser2",parseUser.getString("faceName"));
+                                parseUser = (ParseUser)objects.get(2);
+                                parseUser.getString("FaceName");
+                                Log.d("printUser3",parseUser.getString("faceName"));
 
-                                }
                             }
 
                             });
