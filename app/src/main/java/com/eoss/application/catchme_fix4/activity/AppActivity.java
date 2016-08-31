@@ -25,6 +25,7 @@ import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseUser;
 
 import org.json.JSONObject;
@@ -324,6 +325,12 @@ public class AppActivity extends AppCompatActivity implements
             mRequestingLocationUpdates = false;
             //setButtonsEnabledState();
             stopLocationUpdates();
+
+            //set in parse user
+            ParseUser currentUser = ParseUser.getCurrentUser();
+            ParseGeoPoint point = new ParseGeoPoint(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+            currentUser.put("Location",point);
+            currentUser.saveInBackground();
 
         } else {
             Log.d("lat::>null","long::>null");

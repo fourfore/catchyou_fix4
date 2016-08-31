@@ -27,4 +27,9 @@ public class NearbyFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_nearby, container, false);
     }
 
+    @Override
+    public void onStart(){
+        super.onStart();
+    }
+
 }
