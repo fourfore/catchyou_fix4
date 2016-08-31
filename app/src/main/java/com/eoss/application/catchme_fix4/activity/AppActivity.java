@@ -37,6 +37,7 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStates;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.vision.barcode.Barcode;
 import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
@@ -407,7 +408,25 @@ public class AppActivity extends AppCompatActivity implements
                 public void done(ParseException e) {
                     if (e == null) {
                         // Saved successfully.
+                        ParseGeoPoint geoPoint = new ParseGeoPoint(mCurrentLocation.getLatitude(),mCurrentLocation.getLongitude());
                         Log.d("Saved successfully", "update location");
+                        ParseQuery<ParseUser> query = ParseUser.getQuery();
+                        query.whereNear("Location",geoPoint);
+                        query.findInBackground(new FindCallback<ParseUser>() {
+                            public void done(List<ParseUser> objects, ParseException e) {
+                                if (e == null) {
+
+                                    if(objects.size() != 0){
+                                        for(ParseUser user: objects){
+                                            Log.d("username==>",user.getString("faceName"));
+                                        }
+
+                                    }
+                                } else {
+                                    // Something went wrong.
+                                }
+                            }
+                        });
 
                     } else {
                         // The save failed.
@@ -417,6 +436,7 @@ public class AppActivity extends AppCompatActivity implements
             });
 
         } else {
+
             Log.d("lat::>null","long::>null");
         }
 
