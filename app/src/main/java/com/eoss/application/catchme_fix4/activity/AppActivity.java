@@ -62,7 +62,7 @@ public class AppActivity extends AppCompatActivity implements
     private Toolbar toolbar;
     private TabLayout tabLayout;
     private ViewPager viewPager;
-    ViewPagerAdapter adapter;
+    private ViewPagerAdapter adapter;
     private int[] tabIcons = {
             R.drawable.ic_account_circle_white_24dp,
             R.drawable.ic_face_white_24dp,
