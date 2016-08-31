@@ -38,6 +38,7 @@ import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStates;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.parse.FindCallback;
+import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 
@@ -406,35 +407,8 @@ public class AppActivity extends AppCompatActivity implements
                 public void done(ParseException e) {
                     if (e == null) {
                         // Saved successfully.
-                        Log.d("Saved successfully", "User update saved!");
-                        ParseGeoPoint userLocation = (ParseGeoPoint) currentUser.get("location");
-                        ParseQuery<ParseObject> query = ParseQuery.getQuery("PlaceObject");
-                        query.whereNear("location", userLocation);
-                        query.setLimit(10);
-                        query.findInBackground(new FindCallback<ParseObject>() {
-                            @Override
-                            public void done(List<ParseObject> objects, ParseException e) {
-                                Log.d("TESTESTTEST","TESTESTTEST");
-//                                for(ParseObject parseObject : objects)
-//                                {
-//                                    ParseUser parseUser = (ParseUser)parseObject;
-//                                    Log.d("printUser",parseUser.getString("faceName"));
-//
-//                                }
-                                ParseUser parseUser = (ParseUser)objects.get(0);
-                                parseUser.getString("FaceName");
-                                Log.d("printUser1",parseUser.getString("FaceName"));
-                                parseUser = (ParseUser)objects.get(1);
-                                parseUser.getString("FaceName");
-                                Log.d("printUser2",parseUser.getString("faceName"));
-                                parseUser = (ParseUser)objects.get(2);
-                                parseUser.getString("FaceName");
-                                Log.d("printUser3",parseUser.getString("faceName"));
+                        Log.d("Saved successfully", "update location");
 
-                            }
-
-                            });
-//
                     } else {
                         // The save failed.
                         Log.d("TAG", "User update error: " + e);
