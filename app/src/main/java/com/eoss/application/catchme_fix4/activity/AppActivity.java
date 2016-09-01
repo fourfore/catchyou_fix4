@@ -411,14 +411,19 @@ public class AppActivity extends AppCompatActivity implements
                         ParseGeoPoint geoPoint = new ParseGeoPoint(mCurrentLocation.getLatitude(),mCurrentLocation.getLongitude());
                         Log.d("Saved successfully", "update location");
                         ParseQuery<ParseUser> query = ParseUser.getQuery();
-                        query.whereNear("Location",geoPoint);
+                        query.whereWithinKilometers("Location",geoPoint,10);
                         query.findInBackground(new FindCallback<ParseUser>() {
                             public void done(List<ParseUser> objects, ParseException e) {
                                 if (e == null) {
 
                                     if(objects.size() != 0){
+                                        ParseGeoPoint userLocation;
+
                                         for(ParseUser user: objects){
-                                            Log.d("username==>",user.getString("faceName"));
+                                            userLocation = user.getParseGeoPoint("Location");
+                                            String lat = Double.toString(userLocation.getLatitude());
+                                            String lon = Double.toString(userLocation.getLongitude());
+                                            Log.d("Lat==>" + lat,"Long==>" + lon +"name==>" +user.getString("faceName"));
                                         }
 
                                     }
