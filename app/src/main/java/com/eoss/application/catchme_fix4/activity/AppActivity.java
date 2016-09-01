@@ -412,7 +412,9 @@ public class AppActivity extends AppCompatActivity implements
     }
 
     public void updateQueryNearby(){
+
         ParseQuery<ParseUser> query = ParseUser.getQuery();
+        query.whereNotEqualTo("username",ParseUser.getCurrentUser().getUsername());
         query.whereWithinKilometers("Location",ParseUser.getCurrentUser().getParseGeoPoint("Location"),10);
         query.findInBackground(new FindCallback<ParseUser>() {
             public void done(List<ParseUser> objects, ParseException e) {
