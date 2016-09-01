@@ -438,6 +438,7 @@ public class AppActivity extends AppCompatActivity implements
         } else {
 
             Log.d("lat::>null","long::>null");
+
         }
 
     }
