@@ -22,6 +22,14 @@ import java.util.List;
  */
 public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ProfileViewHolder> {
 
+
+    public void setListener(Listener listener) {
+        this.listener = listener;
+    }
+
+    public static interface Listener {
+        public void onClick(int position);
+    }
     public static class ProfileViewHolder extends RecyclerView.ViewHolder {
 
         CardView cv;
@@ -40,6 +48,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ProfileV
         }
     }
 
+    private Listener listener;
     ParseUser person;
     Context c;
 
@@ -61,13 +70,24 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ProfileV
     }
 
     @Override
-    public void onBindViewHolder(ProfileViewHolder personViewHolder, int i) {
+    public void onBindViewHolder(ProfileViewHolder personViewHolder,final int position) {
         if(person.getString("faceName") != null)
         Log.d("ForeWait",person.getString("faceName"));
         personViewHolder.personName.setText(person.getString("faceName"));
         personViewHolder.personGender.setText(person.getString("gender"));
         //personViewHolder.personPhoto.setImageResource(persons.get(i).photoId);
         Picasso.with(c).load(person.getString("profilePicUrl")).into(personViewHolder.personPhoto);
+
+        //click photo Listenner for do something
+        personViewHolder.personPhoto.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Log.d("onClick-> Photo","onClick-> Photo");
+                if (listener != null) {
+                    listener.onClick(position);
+                }
+            }
+        });
     }
 
     @Override

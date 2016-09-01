@@ -1,6 +1,7 @@
 package com.eoss.application.catchme_fix4.fragment;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -98,6 +99,11 @@ public class ProfileFragment extends Fragment {
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setHasFixedSize(true);
         adapter = new ProfileAdapter(data,getContext());
+        adapter.setListener(new ProfileAdapter.Listener() {
+            public void onClick(int position) {
+                Log.d("onClick","onClickIn profileFragment");
+            }
+        });
         recyclerView.setAdapter(adapter);
     }
     public void pushDatatoFragment()

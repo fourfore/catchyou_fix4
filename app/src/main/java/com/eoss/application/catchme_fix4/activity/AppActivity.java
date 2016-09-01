@@ -386,12 +386,63 @@ public class AppActivity extends AppCompatActivity implements
             //mStopUpdatesButton.setEnabled(false);
        // }
    // }
+    public void updateQueryNearby2(){
+        ParseQuery<ParseUser> query = ParseUser.getQuery();
+        query.findInBackground(new FindCallback<ParseUser>() {
+            public void done(List<ParseUser> objects, ParseException e) {
+                if (e == null) {
+                    Log.d("Fore_DEBUG","Fore_DEBUG3");
 
+                    if(objects.size() != 0){
+                        Log.d("Fore_DEBUG","Fore_DEBUG2");
+                        //run in Show in NearBy Fragment
+
+                        NearbyFragment nearbyFragment= (NearbyFragment)adapter.getItem(1);
+                        nearbyFragment.setUpAdapter(objects);
+
+
+
+                    }
+                } else {
+
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    public void updateQueryNearby(){
+        ParseQuery<ParseUser> query = ParseUser.getQuery();
+        query.whereWithinKilometers("Location",ParseUser.getCurrentUser().getParseGeoPoint("Location"),10);
+        query.findInBackground(new FindCallback<ParseUser>() {
+            public void done(List<ParseUser> objects, ParseException e) {
+                if (e == null) {
+
+                    if(objects.size() != 0){
+                        //run in Show in NearBy Fragment
+                        ParseGeoPoint userLocation;
+                        NearbyFragment nearbyFragment= (NearbyFragment)adapter.getItem(1);
+                        nearbyFragment.setUpAdapter(objects);
+                        for(ParseUser user: objects){
+                            userLocation = user.getParseGeoPoint("Location");
+                            String lat = Double.toString(userLocation.getLatitude());
+                            String lon = Double.toString(userLocation.getLongitude());
+                            Log.d("Lat==>" + lat,"Long==>" + lon +"name==>" +user.getString("faceName"));
+                        }
+
+                    }
+                } else {
+                    // Something went wrong.
+                }
+            }
+        });
+
+    }
     /**
      * Updates the latitude, the longitude, and the last location time in the UI.
      */
     private void updateUI() {
-
+        //updateQueryNearby2();
         if (mCurrentLocation != null) {
 
 
@@ -410,28 +461,32 @@ public class AppActivity extends AppCompatActivity implements
                         // Saved successfully.
                         ParseGeoPoint geoPoint = new ParseGeoPoint(mCurrentLocation.getLatitude(),mCurrentLocation.getLongitude());
                         Log.d("Saved successfully", "update location");
-                        ParseQuery<ParseUser> query = ParseUser.getQuery();
-                        query.whereWithinKilometers("Location",geoPoint,10);
-                        query.findInBackground(new FindCallback<ParseUser>() {
-                            public void done(List<ParseUser> objects, ParseException e) {
-                                if (e == null) {
-
-                                    if(objects.size() != 0){
-                                        ParseGeoPoint userLocation;
-
-                                        for(ParseUser user: objects){
-                                            userLocation = user.getParseGeoPoint("Location");
-                                            String lat = Double.toString(userLocation.getLatitude());
-                                            String lon = Double.toString(userLocation.getLongitude());
-                                            Log.d("Lat==>" + lat,"Long==>" + lon +"name==>" +user.getString("faceName"));
-                                        }
-
-                                    }
-                                } else {
-                                    // Something went wrong.
-                                }
-                            }
-                        });
+                        updateQueryNearby();
+//                        ParseQuery<ParseUser> query = ParseUser.getQuery();
+//                        query.whereWithinKilometers("Location",geoPoint,10);
+//                        query.findInBackground(new FindCallback<ParseUser>() {
+//                            public void done(List<ParseUser> objects, ParseException e) {
+//                                if (e == null) {
+//
+//                                    if(objects.size() != 0){
+//                                        //run in Show in NearBy Fragment
+//                                        ParseGeoPoint userLocation;
+//                                        updateQueryNearby(objects);
+//                                        NearbyFragment nearbyFragment= (NearbyFragment)adapter.getItem(1);
+//                                        nearbyFragment.setUpAdapter(objects);
+//                                        for(ParseUser user: objects){
+//                                            userLocation = user.getParseGeoPoint("Location");
+//                                            String lat = Double.toString(userLocation.getLatitude());
+//                                            String lon = Double.toString(userLocation.getLongitude());
+//                                            Log.d("Lat==>" + lat,"Long==>" + lon +"name==>" +user.getString("faceName"));
+//                                        }
+//
+//                                    }
+//                                } else {
+//                                    // Something went wrong.
+//                                }
+//                            }
+//                        });
 
                     } else {
                         // The save failed.
@@ -443,6 +498,7 @@ public class AppActivity extends AppCompatActivity implements
         } else {
 
             Log.d("lat::>null","long::>null");
+
 
         }
 
