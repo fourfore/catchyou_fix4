@@ -81,6 +81,12 @@ public class AppActivity extends AppCompatActivity implements
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
 
     // Fragment Variable
+
+    private ProfileFragment profileFragment;
+    private NearbyFragment nearbyFragment;
+    private FavFragment favFragment;
+    private SettingFragment settingFragment;
+
     private Toolbar toolbar;
     private TabLayout tabLayout;
     private ViewPager viewPager;
@@ -95,6 +101,24 @@ public class AppActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            //Restore your fragment instance
+            profileFragment = (ProfileFragment)getSupportFragmentManager().getFragment(
+                    savedInstanceState, "fragmentProfile");
+            nearbyFragment = (NearbyFragment)getSupportFragmentManager().getFragment(
+                    savedInstanceState, "fragmentNearby");
+            favFragment = (FavFragment)getSupportFragmentManager().getFragment(
+                    savedInstanceState, "fragmentFav");
+            settingFragment = (SettingFragment)getSupportFragmentManager().getFragment(
+                    savedInstanceState, "fragmentSetting");
+
+        }
+        else {
+            profileFragment = new ProfileFragment();
+            nearbyFragment = new NearbyFragment();
+            favFragment = new FavFragment();
+            settingFragment = new SettingFragment();
+        }
         setContentView(R.layout.activity_main);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -211,10 +235,10 @@ public class AppActivity extends AppCompatActivity implements
 
     private void setupViewPager(ViewPager viewPager) {
         adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new ProfileFragment(), "Profile");
-        adapter.addFragment(new NearbyFragment(), "NearBy");
-        adapter.addFragment(new FavFragment(), "Fav");
-        adapter.addFragment(new SettingFragment(), "Setting");
+        adapter.addFragment(profileFragment, "Profile");
+        adapter.addFragment(nearbyFragment, "NearBy");
+        adapter.addFragment(favFragment, "Fav");
+        adapter.addFragment(settingFragment, "Setting");
         viewPager.setAdapter(adapter);
     }
 
@@ -492,6 +516,7 @@ public class AppActivity extends AppCompatActivity implements
                     } else {
                         // The save failed.
                         Log.d("TAG", "User update error: " + e);
+
                     }
                 }
             });
@@ -499,7 +524,7 @@ public class AppActivity extends AppCompatActivity implements
         } else {
 
             Log.d("lat::>null","long::>null");
-
+            updateQueryNearby2();
 
         }
 
@@ -618,10 +643,16 @@ public class AppActivity extends AppCompatActivity implements
      * Stores activity data in the Bundle.
      */
     public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putBoolean(REQUESTING_LOCATION_UPDATES_KEY, mRequestingLocationUpdates);
         savedInstanceState.putParcelable(LOCATION_KEY, mCurrentLocation);
         savedInstanceState.putString(LAST_UPDATED_TIME_STRING_KEY, mLastUpdateTime);
-        super.onSaveInstanceState(savedInstanceState);
+
+        getSupportFragmentManager().putFragment(savedInstanceState, "fragmentProfile", profileFragment);
+        getSupportFragmentManager().putFragment(savedInstanceState, "fragmentNearby", nearbyFragment);
+        getSupportFragmentManager().putFragment(savedInstanceState, "fragmentFav", favFragment);
+        getSupportFragmentManager().putFragment(savedInstanceState, "fragmentSetting", settingFragment);
+        //super.onSaveInstanceState(savedInstanceState);
     }
 
     @Override
