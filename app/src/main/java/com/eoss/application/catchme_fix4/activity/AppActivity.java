@@ -186,40 +186,6 @@ public class AppActivity extends AppCompatActivity implements
             }
         });
 
-
-        //Code get user profile from face book
-        Bundle params = new Bundle();
-        params.putString("fields", "id,email,gender,cover,picture.type(large),first_name,last_name");
-        new GraphRequest(AccessToken.getCurrentAccessToken(), "me", params, HttpMethod.GET,
-                new GraphRequest.Callback() {
-                    @Override
-                    public void onCompleted(GraphResponse response) {
-                        if (response != null) {
-                            try {
-                                JSONObject data = response.getJSONObject();
-                                if (data.has("picture")) {
-                                    String profilePicUrl = data.getJSONObject("picture").getJSONObject("data").getString("url");
-                                    String email = data.getString("email");
-                                    String first_name = data.getString("first_name");
-                                    String last_name = data.getString("last_name");
-                                    String gender = data.getString("gender");
-
-                                    Log.d("url:::>",profilePicUrl);
-                                    Log.d("email:::>",email.toString());
-                                    Log.d("first_name:::>",first_name.toString());
-                                    Log.d("last_name:::>",last_name.toString());
-                                    Log.d("gender:::>",gender.toString());
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                }).executeAsync();
-
-
-
-
     }
 
     private void setupTabIcons() {
@@ -278,37 +244,6 @@ public class AppActivity extends AppCompatActivity implements
     }
 
 
-    /**
-     * Updates fields based on data stored in the bundle.
-     *
-     * @param savedInstanceState The activity state saved in the Bundle.
-     */
-    private void updateValuesFromBundle(Bundle savedInstanceState) {
-        Log.i(TAG, "Updating values from bundle");
-        if (savedInstanceState != null) {
-            // Update the value of mRequestingLocationUpdates from the Bundle, and make sure that
-            // the Start Updates and Stop Updates buttons are correctly enabled or disabled.
-            if (savedInstanceState.keySet().contains(REQUESTING_LOCATION_UPDATES_KEY)) {
-                mRequestingLocationUpdates = savedInstanceState.getBoolean(
-                        REQUESTING_LOCATION_UPDATES_KEY);
-
-            }
-
-            // Update the value of mCurrentLocation from the Bundle and update the UI to show the
-            // correct latitude and longitude.
-            if (savedInstanceState.keySet().contains(LOCATION_KEY)) {
-                // Since LOCATION_KEY was found in the Bundle, we can be sure that mCurrentLocation
-                // is not null.
-                mCurrentLocation = savedInstanceState.getParcelable(LOCATION_KEY);
-            }
-
-            // Update the value of mLastUpdateTime from the Bundle and update the UI.
-            if (savedInstanceState.keySet().contains(LAST_UPDATED_TIME_STRING_KEY)) {
-                mLastUpdateTime = savedInstanceState.getString(LAST_UPDATED_TIME_STRING_KEY);
-            }
-            updateUI();
-        }
-    }
 
     /**
      * Builds a GoogleApiClient. Uses the {@code #addApi} method to request the
@@ -357,13 +292,7 @@ public class AppActivity extends AppCompatActivity implements
      * Handles the Start Updates button and requests start of location updates. Does nothing if
      * updates have already been requested.
      */
-//    public void startUpdatesButtonHandler(View view) {
-//        if (!mRequestingLocationUpdates) {
-//            mRequestingLocationUpdates = true;
-//            //setButtonsEnabledState();
-//            startLocationUpdates();
-//        }
-//    }
+
     public void swipeUpdate() {
         if (!mRequestingLocationUpdates) {
             mRequestingLocationUpdates = true;
@@ -397,20 +326,7 @@ public class AppActivity extends AppCompatActivity implements
                 mGoogleApiClient, mLocationRequest, this);
     }
 
-    /**
-     * Ensures that only one button is enabled at any time. The Start Updates button is enabled
-     * if the user is not requesting location updates. The Stop Updates button is enabled if the
-     * user is requesting location updates.
-     */
-    //private void setButtonsEnabledState() {
-       // if (mRequestingLocationUpdates) {
-            //mStartUpdatesButton.setEnabled(false);
-            //mStopUpdatesButton.setEnabled(true);
-       // } else {
-          //  mStartUpdatesButton.setEnabled(true);
-            //mStopUpdatesButton.setEnabled(false);
-       // }
-   // }
+
     public void updateQueryNearby2(){
         ParseQuery<ParseUser> query = ParseUser.getQuery();
         query.findInBackground(new FindCallback<ParseUser>() {
@@ -424,9 +340,6 @@ public class AppActivity extends AppCompatActivity implements
 
                         NearbyFragment nearbyFragment= (NearbyFragment)adapter.getItem(1);
                         nearbyFragment.setUpAdapter(objects);
-
-
-
                     }
                 } else {
 
@@ -489,31 +402,6 @@ public class AppActivity extends AppCompatActivity implements
                         ParseGeoPoint geoPoint = new ParseGeoPoint(mCurrentLocation.getLatitude(),mCurrentLocation.getLongitude());
                         Log.d("Saved successfully", "update location");
                         updateQueryNearby();
-//                        ParseQuery<ParseUser> query = ParseUser.getQuery();
-//                        query.whereWithinKilometers("Location",geoPoint,10);
-//                        query.findInBackground(new FindCallback<ParseUser>() {
-//                            public void done(List<ParseUser> objects, ParseException e) {
-//                                if (e == null) {
-//
-//                                    if(objects.size() != 0){
-//                                        //run in Show in NearBy Fragment
-//                                        ParseGeoPoint userLocation;
-//                                        updateQueryNearby(objects);
-//                                        NearbyFragment nearbyFragment= (NearbyFragment)adapter.getItem(1);
-//                                        nearbyFragment.setUpAdapter(objects);
-//                                        for(ParseUser user: objects){
-//                                            userLocation = user.getParseGeoPoint("Location");
-//                                            String lat = Double.toString(userLocation.getLatitude());
-//                                            String lon = Double.toString(userLocation.getLongitude());
-//                                            Log.d("Lat==>" + lat,"Long==>" + lon +"name==>" +user.getString("faceName"));
-//                                        }
-//
-//                                    }
-//                                } else {
-//                                    // Something went wrong.
-//                                }
-//                            }
-//                        });
 
                     } else {
                         // The save failed.
@@ -644,6 +532,7 @@ public class AppActivity extends AppCompatActivity implements
     /**
      * Stores activity data in the Bundle.
      */
+    @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putBoolean(REQUESTING_LOCATION_UPDATES_KEY, mRequestingLocationUpdates);
