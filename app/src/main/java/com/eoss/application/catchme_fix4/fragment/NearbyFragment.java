@@ -51,7 +51,8 @@ public class NearbyFragment extends Fragment {
             @Override
             public void onRefresh() {
                 AppActivity appActivity = (AppActivity)getActivity();
-                appActivity.updateQueryNearby();
+                appActivity.swipeUpdate();
+                //appActivity.updateQueryNearby();
                 //setUpAdapter(objects);
                 Log.d("RefreshListener2","RefreshListener");
                 swipeContainer.setRefreshing(false);

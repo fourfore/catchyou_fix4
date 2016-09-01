@@ -357,14 +357,20 @@ public class AppActivity extends AppCompatActivity implements
      * Handles the Start Updates button and requests start of location updates. Does nothing if
      * updates have already been requested.
      */
-    public void startUpdatesButtonHandler(View view) {
+//    public void startUpdatesButtonHandler(View view) {
+//        if (!mRequestingLocationUpdates) {
+//            mRequestingLocationUpdates = true;
+//            //setButtonsEnabledState();
+//            startLocationUpdates();
+//        }
+//    }
+    public void swipeUpdate() {
         if (!mRequestingLocationUpdates) {
             mRequestingLocationUpdates = true;
             //setButtonsEnabledState();
             startLocationUpdates();
         }
     }
-
     /**
      * Handles the Stop Updates button, and requests removal of location updates. Does nothing if
      * updates were not previously requested.
