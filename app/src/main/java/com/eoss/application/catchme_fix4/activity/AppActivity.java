@@ -3,6 +3,7 @@ package com.eoss.application.catchme_fix4.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.support.design.widget.TabLayout;
@@ -37,18 +38,12 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStates;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
-import com.google.android.gms.vision.barcode.Barcode;
 import com.parse.FindCallback;
-import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
-
-import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-
 import org.json.JSONObject;
-
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -101,6 +96,7 @@ public class AppActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         if (savedInstanceState != null) {
             //Restore your fragment instance
             profileFragment = (ProfileFragment)getSupportFragmentManager().getFragment(

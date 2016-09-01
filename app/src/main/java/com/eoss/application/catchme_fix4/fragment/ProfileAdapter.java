@@ -9,9 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.eoss.application.catchme_fix4.R;
-import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.squareup.picasso.Picasso;
 
