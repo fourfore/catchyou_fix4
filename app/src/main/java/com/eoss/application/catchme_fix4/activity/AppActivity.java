@@ -117,7 +117,6 @@ public class AppActivity extends AppCompatActivity implements
         mStartUpdatesButton = (Button) findViewById(R.id.button);
         mRequestingLocationUpdates = false;
         mLastUpdateTime = "";
-
         Log.d("connect","google");
         buildGoogleApiClient();
 
