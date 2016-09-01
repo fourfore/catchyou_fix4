@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 
 import com.eoss.application.catchme_fix4.R;
 import com.eoss.application.catchme_fix4.activity.AppActivity;
-import com.google.android.gms.nearby.Nearby;
 import com.parse.ParseUser;
 
 import java.util.List;
@@ -22,7 +21,7 @@ import java.util.List;
  * A simple {@link Fragment} subclass.
  */
 public class NearbyFragment extends Fragment {
-    private RecyclerView recyclerView;
+    private RecyclerView recyclerView ;
     private LinearLayoutManager linearLayoutManager;
     private SwipeRefreshLayout swipeContainer;
     private NearbyAdapter adapter;
@@ -37,6 +36,7 @@ public class NearbyFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_nearby, container, false);
+
     }
 
     @Override
@@ -61,8 +61,8 @@ public class NearbyFragment extends Fragment {
     }
 
     public void setUpAdapter(List<ParseUser> parseUsers) {
-        recyclerView = (RecyclerView) getView().findViewById(R.id.nearby_RecyclerView);
 
+        recyclerView = (RecyclerView) getView().findViewById(R.id.nearby_RecyclerView);
         linearLayoutManager = new LinearLayoutManager(getContext()) {
             @Override
             public boolean canScrollVertically() {
