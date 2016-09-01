@@ -118,18 +118,44 @@ public class AppActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_main);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
+
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                Log.d("check5",position+"");
+                if(position == 0)
+                    toolbar.setTitle("Profile");
+                else if(position == 1)
+                    toolbar.setTitle("Nearby");
+                else if(position == 2)
+                    toolbar.setTitle("Favorite");
+                else if(position == 3)
+                    toolbar.setTitle("Setting");
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
         //how to get another fragment
         //FavFragment favFragment = (FavFragment)adapter.getItem(2);
         viewPager.setOffscreenPageLimit(3);
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
         viewPager.setCurrentItem(1);
+        //toolbar.setTitle("Nearby");
         setupTabIcons();
 
 
