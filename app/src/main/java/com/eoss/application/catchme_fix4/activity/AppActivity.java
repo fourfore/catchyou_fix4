@@ -491,6 +491,7 @@ public class AppActivity extends AppCompatActivity implements
                     } else {
                         // The save failed.
                         Log.d("TAG", "User update error: " + e);
+
                     }
                 }
             });
@@ -498,7 +499,7 @@ public class AppActivity extends AppCompatActivity implements
         } else {
 
             Log.d("lat::>null","long::>null");
-
+            updateQueryNearby2();
 
         }
 
