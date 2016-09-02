@@ -7,8 +7,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.eoss.application.catchme_fix4.R;
 import com.parse.ParseUser;
@@ -23,16 +25,25 @@ public class NearbyAdapter extends RecyclerView.Adapter<NearbyAdapter.NearbyView
 
     public static class NearbyViewHolder extends RecyclerView.ViewHolder {
 
-        CardView cv;
+//        CardView cv;
+        TextView name;
+        //TextView gender;
+        ImageView photo;
+        ToggleButton requestToggle;
+
 
 
 
         NearbyViewHolder(View itemView) {
             super(itemView);
-            cv = (CardView)itemView.findViewById(R.id.nearby_cardView);
+            //cv = (CardView)itemView.findViewById(R.id.nearby_cardView);
 //            personPhoto = (ImageView)itemView.findViewById(R.id.nearby_person_photo);
-//            personName = (TextView)itemView.findViewById(R.id.nearby_person_name);
-//            personGender = (TextView)itemView.findViewById(R.id.nearby_person_gender);
+            name = (TextView)itemView.findViewById(R.id.nearby_list_name);
+            //gender = (TextView)itemView.findViewById(R.id.nearby_list_gender);
+            photo = (ImageView) itemView.findViewById(R.id.nearby_person_photo);
+            requestToggle = (ToggleButton) itemView.findViewById(R.id.requestToggle);
+
+
 
         }
     }
@@ -52,29 +63,40 @@ public class NearbyAdapter extends RecyclerView.Adapter<NearbyAdapter.NearbyView
 
     @Override
     public NearbyViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.nearby_cardview, viewGroup, false);
+        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.nearby_list, viewGroup, false);
         NearbyViewHolder pvh = new NearbyViewHolder(v);
         return pvh;
     }
 
     @Override
-    public void onBindViewHolder(NearbyViewHolder personViewHolder, final int position) {
-        ImageView imageView = (ImageView)personViewHolder.cv.findViewById(R.id.nearby_person_photo);
-        TextView nameTextView = (TextView)personViewHolder.cv.findViewById(R.id.nearby_person_name);
-        TextView genderTextView = (TextView)personViewHolder.cv.findViewById(R.id.nearby_person_gender);
+    public void onBindViewHolder(final NearbyViewHolder personViewHolder, final int position) {
 
-        nameTextView.setText(parseUsers.get(position).getString("faceName"));
-        genderTextView.setText(parseUsers.get(position).getString("gender"));
 
-        //personViewHolder.personPhoto.setImageResource(persons.get(i).photoId);
-        Picasso.with(c).load(parseUsers.get(position).getString("profilePicUrl")).into(imageView);
-
-        personViewHolder.cv.setOnClickListener(new View.OnClickListener() {
+        personViewHolder.name.setText(parseUsers.get(position).getString("faceName"));
+        //personViewHolder.gender.setText(parseUsers.get(position).getString("gender"));
+        Picasso.with(c).load(parseUsers.get(position).getString("profilePicUrl")).into(personViewHolder.photo);
+        personViewHolder.requestToggle.setText("Send Request");
+        personViewHolder.requestToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onClick(View view) {
-                Log.d("ForeDebug",parseUsers.get(position).getString("faceName"));
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(b == true)
+                {
+                    Log.d("Foreb","Request Sent"+parseUsers.get(position).getString("faceName"));
+                    personViewHolder.requestToggle.setTextOn("Request Sent");
+                }
+                else
+                {
+                    Log.d("Foreb","Request "+parseUsers.get(position).getString("faceName"));
+                    personViewHolder.requestToggle.setTextOff("Send Request");
+                }
             }
         });
+//        personViewHolder.cv.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Log.d("ForeDebug",parseUsers.get(position).getString("faceName"));
+//            }
+//        });
 
     }
 

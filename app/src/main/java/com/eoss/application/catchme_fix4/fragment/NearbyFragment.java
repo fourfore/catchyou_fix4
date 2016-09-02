@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.eoss.application.catchme_fix4.DividerItemDecoration;
 import com.eoss.application.catchme_fix4.R;
 import com.eoss.application.catchme_fix4.activity.AppActivity;
 import com.parse.ParseUser;
@@ -59,10 +60,10 @@ public class NearbyFragment extends Fragment {
             }
         });
         // Configure the refreshing colors
-        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+        swipeContainer.setColorSchemeResources(android.R.color.holo_red_light,
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
+                android.R.color.holo_blue_light);
     }
 
     public void setUpAdapter(List<ParseUser> parseUsers) {
@@ -78,7 +79,7 @@ public class NearbyFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         adapter = new NearbyAdapter(parseUsers, getContext());
 
-
+        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL));
         recyclerView.setAdapter(adapter);
     }
 }
