@@ -13,6 +13,10 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.eoss.application.catchme_fix4.R;
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.squareup.picasso.Picasso;
 
@@ -81,11 +85,30 @@ public class NearbyAdapter extends RecyclerView.Adapter<NearbyAdapter.NearbyView
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(b == true)
                 {
+                    ParseObject follow = new ParseObject("Follow");
+                    follow.put("from",ParseUser.getCurrentUser().getUsername());
+                    follow.put("to",parseUsers.get(position).getUsername());
+                    follow.put("status",0);
+                    follow.saveInBackground();
                     Log.d("Foreb","Request Sent"+parseUsers.get(position).getString("faceName"));
                     personViewHolder.requestToggle.setTextOn("Request Sent");
                 }
                 else
                 {
+//                    ParseQuery<ParseObject> query = ParseQuery.getQuery("Follow");
+//                    query.whereEqualTo("From",ParseUser.getCurrentUser().getUsername());
+//                    query.whereEqualTo("To",parseUsers.get(position).getUsername());
+//                    query.getInBackground(null, new GetCallback<ParseObject>() {
+//                        public void done(ParseObject object, ParseException e) {
+//                            if (e == null) {
+//                                object.toString();
+//
+//                            } else {
+//                                // something went wrong
+//                                Log.d("checkfore","Fore");
+//                            }
+//                        }
+//                    });
                     Log.d("Foreb","Request "+parseUsers.get(position).getString("faceName"));
                     personViewHolder.requestToggle.setTextOff("Send Request");
                 }

@@ -389,12 +389,12 @@ public class AppActivity extends AppCompatActivity implements
                         ParseGeoPoint userLocation;
                         NearbyFragment nearbyFragment= (NearbyFragment)adapter.getItem(1);
                         nearbyFragment.setUpAdapter(objects);
-                        for(ParseUser user: objects){
-                            userLocation = user.getParseGeoPoint("Location");
-                            String lat = Double.toString(userLocation.getLatitude());
-                            String lon = Double.toString(userLocation.getLongitude());
-                            Log.d("Lat==>" + lat,"Long==>" + lon +"name==>" +user.getString("faceName"));
-                        }
+//                        for(ParseUser user: objects){
+//                            userLocation = user.getParseGeoPoint("Location");
+//                            String lat = Double.toString(userLocation.getLatitude());
+//                            String lon = Double.toString(userLocation.getLongitude());
+//                            Log.d("Lat==>" + lat,"Long==>" + lon +"name==>" +user.getString("faceName"));
+//                        }
 
                     }
                 } else {
