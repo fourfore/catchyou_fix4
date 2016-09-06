@@ -26,7 +26,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
     }
 
-
+    //
     public void onClickLogin(View view){
         progress = ProgressDialog.show(this, "Now loading",
                 "Please wait for a while.", true);
