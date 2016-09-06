@@ -26,6 +26,8 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile files('libs/ParseFacebookUtilsV4-1.10.4.jar')
     //compile 'com.parse:parsefacebookutils-v4-android:1.10.4@aar'
+    
+
     compile 'com.google.android.gms:play-services:9.4.0'
     compile 'com.android.support:appcompat-v7:24.2.0'
     compile 'com.android.support:design:24.2.0'
@@ -38,9 +40,8 @@ dependencies {
     compile 'com.parse:parseui-login-android:0.0.1'
     compile 'com.parse:parseui-widget-android:0.0.1'
     compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'com.android.support:cardview-v7:24.0.+'
-    compile 'com.android.support:recyclerview-v7:24.0.+'
+    compile 'com.android.support:cardview-v7:24.2.0'
+    compile 'com.android.support:recyclerview-v7:24.2.0'
     compile 'com.android.support:multidex:1.0.0'
-
     compile 'de.hdodenhof:circleimageview:2.1.0'
 }

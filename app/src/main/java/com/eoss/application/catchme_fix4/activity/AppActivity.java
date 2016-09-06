@@ -21,14 +21,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 import com.eoss.application.catchme_fix4.R;
+import com.eoss.application.catchme_fix4.fragment.AddFriendFragment;
 import com.eoss.application.catchme_fix4.fragment.FavFragment;
 import com.eoss.application.catchme_fix4.fragment.NearbyFragment;
 import com.eoss.application.catchme_fix4.fragment.ProfileFragment;
 import com.eoss.application.catchme_fix4.fragment.SettingFragment;
-import com.facebook.AccessToken;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
-import com.facebook.HttpMethod;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
@@ -43,7 +40,7 @@ import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import org.json.JSONObject;
+
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -80,6 +77,7 @@ public class AppActivity extends AppCompatActivity implements
     private ProfileFragment profileFragment;
     private NearbyFragment nearbyFragment;
     private FavFragment favFragment;
+    private AddFriendFragment addFriendFragment;
     private SettingFragment settingFragment;
 
     private Toolbar toolbar;
@@ -88,8 +86,9 @@ public class AppActivity extends AppCompatActivity implements
     private ViewPagerAdapter adapter;
     private int[] tabIcons = {
             R.drawable.ic_account_circle_white_24dp,
-            R.drawable.ic_face_white_24dp,
+            R.drawable.ic_my_location_white_24dp,
             R.drawable.ic_favorite_white_24dp,
+            R.drawable.ic_person_add_white_24dp,
             R.drawable.ic_settings_white_24dp
     };
 
@@ -105,6 +104,8 @@ public class AppActivity extends AppCompatActivity implements
                     savedInstanceState, "fragmentNearby");
             favFragment = (FavFragment)getSupportFragmentManager().getFragment(
                     savedInstanceState, "fragmentFav");
+            addFriendFragment = (AddFriendFragment)getSupportFragmentManager().getFragment(
+                    savedInstanceState, "fragmentAddFriend");
             settingFragment = (SettingFragment)getSupportFragmentManager().getFragment(
                     savedInstanceState, "fragmentSetting");
 
@@ -114,6 +115,7 @@ public class AppActivity extends AppCompatActivity implements
             nearbyFragment = new NearbyFragment();
             favFragment = new FavFragment();
             settingFragment = new SettingFragment();
+            addFriendFragment = new AddFriendFragment();
         }
         setContentView(R.layout.activity_main);
 
@@ -141,6 +143,8 @@ public class AppActivity extends AppCompatActivity implements
                 else if(position == 2)
                     toolbar.setTitle("Favorite");
                 else if(position == 3)
+                    toolbar.setTitle("Add Friends");
+                else if(position == 4)
                     toolbar.setTitle("Setting");
             }
 
@@ -151,7 +155,7 @@ public class AppActivity extends AppCompatActivity implements
         });
         //how to get another fragment
         //FavFragment favFragment = (FavFragment)adapter.getItem(2);
-        viewPager.setOffscreenPageLimit(3);
+        viewPager.setOffscreenPageLimit(4);
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
         viewPager.setCurrentItem(1);
@@ -219,6 +223,7 @@ public class AppActivity extends AppCompatActivity implements
         tabLayout.getTabAt(1).setIcon(tabIcons[1]);
         tabLayout.getTabAt(2).setIcon(tabIcons[2]);
         tabLayout.getTabAt(3).setIcon(tabIcons[3]);
+        tabLayout.getTabAt(4).setIcon(tabIcons[4]);
     }
 
     private void setupViewPager(ViewPager viewPager) {
@@ -226,6 +231,7 @@ public class AppActivity extends AppCompatActivity implements
         adapter.addFragment(profileFragment, "Profile");
         adapter.addFragment(nearbyFragment, "NearBy");
         adapter.addFragment(favFragment, "Fav");
+        adapter.addFragment(addFriendFragment, "AddFriends");
         adapter.addFragment(settingFragment, "Setting");
         viewPager.setAdapter(adapter);
     }
@@ -568,7 +574,9 @@ public class AppActivity extends AppCompatActivity implements
         getSupportFragmentManager().putFragment(savedInstanceState, "fragmentProfile", profileFragment);
         getSupportFragmentManager().putFragment(savedInstanceState, "fragmentNearby", nearbyFragment);
         getSupportFragmentManager().putFragment(savedInstanceState, "fragmentFav", favFragment);
+        getSupportFragmentManager().putFragment(savedInstanceState, "fragmentAddFriend", addFriendFragment);
         getSupportFragmentManager().putFragment(savedInstanceState, "fragmentSetting", settingFragment);
+
         //super.onSaveInstanceState(savedInstanceState);
     }
 

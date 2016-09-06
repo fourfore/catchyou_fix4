@@ -13,7 +13,10 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.eoss.application.catchme_fix4.R;
+import com.parse.DeleteCallback;
+import com.parse.FindCallback;
 import com.parse.GetCallback;
+import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -21,6 +24,7 @@ import com.parse.ParseUser;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by Foremost on 31/8/2559.
@@ -73,42 +77,80 @@ public class NearbyAdapter extends RecyclerView.Adapter<NearbyAdapter.NearbyView
     }
 
     @Override
-    public void onBindViewHolder(final NearbyViewHolder personViewHolder, final int position) {
+    public void onBindViewHolder(final NearbyViewHolder personViewHolder, final int position ) {
 
 
         personViewHolder.name.setText(parseUsers.get(position).getString("faceName"));
         //personViewHolder.gender.setText(parseUsers.get(position).getString("gender"));
         Picasso.with(c).load(parseUsers.get(position).getString("profilePicUrl")).into(personViewHolder.photo);
         personViewHolder.requestToggle.setText("Send Request");
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Follow");
+        query.whereEqualTo("from",ParseUser.getCurrentUser());
+        query.whereEqualTo("to",parseUsers.get(position));
+        query.findInBackground(new FindCallback<ParseObject>() {
+            public void done(List<ParseObject> objects, ParseException e) {
+                if (e == null ) {
+                    for(ParseObject o : objects)
+                    {
+
+                        if(o.getInt("status") == 0){
+                            //personViewHolder.requestToggle.setChecked(true);
+                            Log.d("passtest1","passtest");
+                        }
+                        else
+                        {
+                            //personViewHolder.requestToggle.setChecked(false);
+                        }
+
+                    }
+                    //Log.d("score", "Retrieved " + scoreList.size() + " scores");
+                } else {
+                    Log.d("score", "Error: " + e.getMessage());
+                }
+            }
+        });
         personViewHolder.requestToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(b == true)
                 {
                     ParseObject follow = new ParseObject("Follow");
-                    follow.put("from",ParseUser.getCurrentUser().getUsername());
-                    follow.put("to",parseUsers.get(position).getUsername());
+                    follow.put("from",ParseUser.getCurrentUser());
+                    follow.put("to", parseUsers.get(position));
                     follow.put("status",0);
+
+                    ParseACL acl=new ParseACL();
+                    acl.setPublicReadAccess(true);
+                    acl.setWriteAccess(ParseUser.getCurrentUser(),true);
+                    follow.setACL(acl);
                     follow.saveInBackground();
+
                     Log.d("Foreb","Request Sent"+parseUsers.get(position).getString("faceName"));
                     personViewHolder.requestToggle.setTextOn("Request Sent");
+                    Log.d("passtest1","true");
+//                    follow.put("from",ParseUser.getCurrentUser());
+//                    follow.put("to", parseUsers.get(position));
                 }
                 else
                 {
-//                    ParseQuery<ParseObject> query = ParseQuery.getQuery("Follow");
-//                    query.whereEqualTo("From",ParseUser.getCurrentUser().getUsername());
-//                    query.whereEqualTo("To",parseUsers.get(position).getUsername());
-//                    query.getInBackground(null, new GetCallback<ParseObject>() {
-//                        public void done(ParseObject object, ParseException e) {
-//                            if (e == null) {
-//                                object.toString();
-//
-//                            } else {
-//                                // something went wrong
-//                                Log.d("checkfore","Fore");
-//                            }
-//                        }
-//                    });
+                    Log.d("passtest1","false");
+                    ParseQuery<ParseObject> query = ParseQuery.getQuery("Follow");
+                    query.whereEqualTo("from",ParseUser.getCurrentUser());
+                    query.whereEqualTo("to",parseUsers.get(position));
+                    query.findInBackground(new FindCallback<ParseObject>() {
+                        public void done(List<ParseObject> objects, ParseException e) {
+                            if (e == null) {
+                                for(ParseObject o : objects)
+                                {
+                                    o.deleteInBackground();
+                                }
+                                //Log.d("score", "Retrieved " + scoreList.size() + " scores");
+                            } else {
+                                Log.d("score", "Error: " + e.getMessage());
+                            }
+                        }
+                    });
+
                     Log.d("Foreb","Request "+parseUsers.get(position).getString("faceName"));
                     personViewHolder.requestToggle.setTextOff("Send Request");
                 }

@@ -23,14 +23,14 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FavFragment extends Fragment {
+public class AddFriendFragment extends Fragment {
 
     private RecyclerView recyclerView ;
     private LinearLayoutManager linearLayoutManager;
     private SwipeRefreshLayout swipeContainer;
-    private FavAdapter adapter;
+    private AddFriendAdapter adapter;
 
-    public FavFragment() {
+    public AddFriendFragment() {
         // Required empty public constructor
     }
 
@@ -39,8 +39,8 @@ public class FavFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_fav, container, false);
-}
+        return inflater.inflate(R.layout.fragment_add_friend, container, false);
+    }
 
     @Override
     public void  onStart()
@@ -59,16 +59,16 @@ public class FavFragment extends Fragment {
         ParseQuery myQuery1 = new ParseQuery("Follow");
         myQuery1.whereEqualTo("to",user);
         myQuery1.whereEqualTo("status",0);
-        ParseQuery myQuery2 = new ParseQuery("Follow");
-        myQuery2.whereEqualTo("from",user);
-        myQuery2.whereEqualTo("status",0);
-        List<ParseQuery<ParseObject>> queries = new ArrayList<ParseQuery<ParseObject>>();
-        queries.add(myQuery1);
-        queries.add(myQuery2);
-        ParseQuery<ParseObject> mainQuery = ParseQuery.or(queries);
-        mainQuery.include("from");
-        mainQuery.include("to");
-        mainQuery.findInBackground(new FindCallback<ParseObject>() {
+//        ParseQuery myQuery2 = new ParseQuery("Follow");
+//        myQuery2.whereEqualTo("from",user);
+//        myQuery2.whereEqualTo("status",0);
+//        List<ParseQuery<ParseObject>> queries = new ArrayList<ParseQuery<ParseObject>>();
+//        queries.add(myQuery1);
+//        queries.add(myQuery2);
+//        ParseQuery<ParseObject> mainQuery = ParseQuery.or(queries);
+        myQuery1.include("from");
+        myQuery1.include("to");
+        myQuery1.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> objects, com.parse.ParseException e) {
                 //query success
@@ -104,17 +104,17 @@ public class FavFragment extends Fragment {
 
     public void setUpAdapter(List<ParseUser> follows)
     {
-        recyclerView=(RecyclerView)getView().findViewById(R.id.fav_RecyclerView);
+        recyclerView=(RecyclerView)getView().findViewById(R.id.addFriend_RecyclerView);
 
         linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setHasFixedSize(true);
-        adapter = new FavAdapter(follows,getContext());
+        adapter = new AddFriendAdapter(follows,getContext());
         recyclerView.setAdapter(adapter);
     }
 
     public void setUpSwipe(){
-        swipeContainer = (SwipeRefreshLayout) getView().findViewById(R.id.fav_swipeContainer);
+        swipeContainer = (SwipeRefreshLayout) getView().findViewById(R.id.addFriend_swipeContainer);
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -131,7 +131,5 @@ public class FavFragment extends Fragment {
                 android.R.color.holo_orange_light,
                 android.R.color.holo_blue_light);
     }
-
-
 
 }
