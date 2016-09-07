@@ -28,24 +28,14 @@ import java.util.List;
 public class FavAdapter extends RecyclerView.Adapter<FavAdapter.FavViewHolder> {
 
     public static class FavViewHolder extends RecyclerView.ViewHolder {
-
-//        CardView cv;
         TextView name;
-        //TextView gender;
         ImageView photo;
-        //ToggleButton requestToggle;
-
-
-
 
         FavViewHolder(View itemView) {
             super(itemView);
-            //cv = (CardView)itemView.findViewById(R.id.nearby_cardView);
-//            personPhoto = (ImageView)itemView.findViewById(R.id.nearby_person_photo);
             name = (TextView)itemView.findViewById(R.id.fav_list_name);
-            //gender = (TextView)itemView.findViewById(R.id.nearby_list_gender);
             photo = (ImageView) itemView.findViewById(R.id.fav_person_photo);
-            //requestToggle = (ToggleButton) itemView.findViewById(R.id.requestToggle);
+
 
 
 

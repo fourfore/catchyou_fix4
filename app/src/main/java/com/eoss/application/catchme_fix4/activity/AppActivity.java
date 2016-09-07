@@ -38,6 +38,7 @@ import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
+import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
@@ -360,18 +361,86 @@ public class AppActivity extends AppCompatActivity implements
 
 
     public void updateQueryNearby2(){
-        ParseQuery<ParseUser> query = ParseUser.getQuery();
-        query.findInBackground(new FindCallback<ParseUser>() {
-            public void done(List<ParseUser> objects, ParseException e) {
+        Log.d("user:Name Current", ParseUser.getCurrentUser().getObjectId());
+
+        ParseQuery<ParseObject> query1 = ParseQuery.getQuery("Follow");
+        query1.whereEqualTo("to",ParseUser.getCurrentUser());
+
+
+
+        ParseQuery<ParseObject> query2 = ParseQuery.getQuery("Follow");
+        query2.whereEqualTo("from",ParseUser.getCurrentUser());
+        query2.whereEqualTo("status",1);
+
+        List<ParseQuery<ParseObject>> queries = new ArrayList<ParseQuery<ParseObject>>();
+        queries.add(query1);
+        queries.add(query2);
+
+        ParseQuery<ParseObject> mainQuery = ParseQuery.or(queries);
+        mainQuery.include("from");
+        mainQuery.include("to");
+
+        mainQuery.findInBackground(new FindCallback<ParseObject>() {
+            public void done(List<ParseObject> objects, ParseException e) {
+
                 if (e == null) {
-                    Log.d("Fore_DEBUG","Fore_DEBUG3");
+
 
                     if(objects.size() != 0){
-                        Log.d("Fore_DEBUG","Fore_DEBUG2");
-                        //run in Show in NearBy Fragment
 
-                        NearbyFragment nearbyFragment= (NearbyFragment)adapter.getItem(1);
-                        nearbyFragment.setUpAdapter(objects);
+                        List<String> list = new ArrayList<String>();
+                        for(ParseObject po:objects) {
+                            Log.d("TestList","TestList");
+                            list.add(po.getParseObject("from").getObjectId());
+                            list.add(po.getParseObject("to").getObjectId());
+                            Log.d("From:Name" + po.getParseObject("from").getObjectId(), "To:Name" + po.getParseObject("to").getObjectId());
+                        }
+                        ParseQuery<ParseUser> query = ParseUser.getQuery();
+                        query.whereNotEqualTo("objectId",ParseUser.getCurrentUser().getObjectId());
+                        query.whereNotContainedIn("objectId",list);
+                        query.findInBackground(new FindCallback<ParseUser>() {
+                            @Override
+                            public void done(List<ParseUser> objects, ParseException e) {
+                                if(objects.size() != 0) {
+                                    for (ParseUser pu : objects) {
+                                        NearbyFragment nearbyFragment= (NearbyFragment)adapter.getItem(1);
+                                        nearbyFragment.setUpAdapter(objects);
+                                        Log.d("user:Name" + pu.getString("faceName"), "user:id" + pu.getObjectId());
+                                    }
+                                }else{
+                                    Log.d("QueryUser1" ,"null");
+                                }
+
+                            }
+                        });
+
+                    }else{
+
+                        List<String> list = new ArrayList<String>();
+                        for(ParseObject po:objects) {
+                            Log.d("TestList2","TestList2");
+                            list.add(po.getParseObject("from").getObjectId());
+                            list.add(po.getParseObject("to").getObjectId());
+                            Log.d("From:Name" + po.getParseObject("from").getObjectId(), "To:Name" + po.getParseObject("to").getObjectId());
+                        }
+                        ParseQuery<ParseUser> query = ParseUser.getQuery();
+                        query.whereNotEqualTo("objectId",ParseUser.getCurrentUser().getObjectId());
+                        query.whereNotContainedIn("objectId",list);
+                        query.findInBackground(new FindCallback<ParseUser>() {
+                            @Override
+                            public void done(List<ParseUser> objects, ParseException e) {
+                                if(objects.size() != 0) {
+                                    for (ParseUser pu : objects) {
+                                        NearbyFragment nearbyFragment= (NearbyFragment)adapter.getItem(1);
+                                        nearbyFragment.setUpAdapter(objects);
+                                        Log.d("user:Name" + pu.getString("faceName"), "user:id" + pu.getObjectId());
+                                    }
+                                }else{
+                                    Log.d("QueryUser2" ,"null");
+                                }
+
+                            }
+                        });
                     }
                 } else {
 
@@ -380,21 +449,28 @@ public class AppActivity extends AppCompatActivity implements
             }
         });
     }
-
     public void updateQueryNearby(){
 
         ParseQuery<ParseUser> query = ParseUser.getQuery();
+        query.include("objectId");
+        query.include("objectId.from");
         query.whereNotEqualTo("username",ParseUser.getCurrentUser().getUsername());
         query.whereWithinKilometers("Location",ParseUser.getCurrentUser().getParseGeoPoint("Location"),1);
+
+
+
         query.findInBackground(new FindCallback<ParseUser>() {
             public void done(List<ParseUser> objects, ParseException e) {
                 if (e == null) {
 
                     if(objects.size() != 0){
+                        for(ParseUser u :objects) {
+                            Log.d("TestQueryInclude", u.getObjectId());
+                        }
                         //run in Show in NearBy Fragment
-                        ParseGeoPoint userLocation;
-                        NearbyFragment nearbyFragment= (NearbyFragment)adapter.getItem(1);
-                        nearbyFragment.setUpAdapter(objects);
+                        //ParseGeoPoint userLocation;
+                        //NearbyFragment nearbyFragment= (NearbyFragment)adapter.getItem(1);
+                       // nearbyFragment.setUpAdapter(objects);
 //                        for(ParseUser user: objects){
 //                            userLocation = user.getParseGeoPoint("Location");
 //                            String lat = Double.toString(userLocation.getLatitude());
@@ -402,9 +478,12 @@ public class AppActivity extends AppCompatActivity implements
 //                            Log.d("Lat==>" + lat,"Long==>" + lon +"name==>" +user.getString("faceName"));
 //                        }
 
+                    }else{
+                        Log.d("TestQueryInclude","null");
                     }
                 } else {
                     // Something went wrong.
+
                 }
             }
         });

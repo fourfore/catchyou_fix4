@@ -58,10 +58,10 @@ public class FavFragment extends Fragment {
         ParseUser user= ParseUser.getCurrentUser();
         ParseQuery myQuery1 = new ParseQuery("Follow");
         myQuery1.whereEqualTo("to",user);
-        myQuery1.whereEqualTo("status",0);
+        myQuery1.whereEqualTo("status",1);
         ParseQuery myQuery2 = new ParseQuery("Follow");
         myQuery2.whereEqualTo("from",user);
-        myQuery2.whereEqualTo("status",0);
+        myQuery2.whereEqualTo("status",1);
         List<ParseQuery<ParseObject>> queries = new ArrayList<ParseQuery<ParseObject>>();
         queries.add(myQuery1);
         queries.add(myQuery2);

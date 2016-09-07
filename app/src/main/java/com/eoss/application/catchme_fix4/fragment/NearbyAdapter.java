@@ -1,6 +1,7 @@
 package com.eoss.application.catchme_fix4.fragment;
 
 import android.content.Context;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -43,6 +44,7 @@ public class NearbyAdapter extends RecyclerView.Adapter<NearbyAdapter.NearbyView
 
 
 
+
         NearbyViewHolder(View itemView) {
             super(itemView);
             //cv = (CardView)itemView.findViewById(R.id.nearby_cardView);
@@ -59,10 +61,12 @@ public class NearbyAdapter extends RecyclerView.Adapter<NearbyAdapter.NearbyView
 
     List<ParseUser> parseUsers;
     Context c;
+    AddFriendFragment addFriendFragment;
 
     NearbyAdapter(List<ParseUser> parseUsers, Context c){
         this.parseUsers = parseUsers;
         this.c = c;
+        this.addFriendFragment = addFriendFragment;
     }
 
     @Override
@@ -134,6 +138,7 @@ public class NearbyAdapter extends RecyclerView.Adapter<NearbyAdapter.NearbyView
                         ParseACL acl = new ParseACL();
                         acl.setPublicReadAccess(true);
                         acl.setWriteAccess(ParseUser.getCurrentUser(), true);
+                        acl.setWriteAccess(parseUsers.get(position), true);
                         follow.setACL(acl);
                         follow.saveInBackground();
                         checkSave = false;

@@ -53,19 +53,13 @@ public class AddFriendFragment extends Fragment {
 
     public void queryAndShowFav()
     {
+
         final List<ParseUser> parseUsers = new ArrayList<>();
         //query
         ParseUser user= ParseUser.getCurrentUser();
         ParseQuery myQuery1 = new ParseQuery("Follow");
         myQuery1.whereEqualTo("to",user);
         myQuery1.whereEqualTo("status",0);
-//        ParseQuery myQuery2 = new ParseQuery("Follow");
-//        myQuery2.whereEqualTo("from",user);
-//        myQuery2.whereEqualTo("status",0);
-//        List<ParseQuery<ParseObject>> queries = new ArrayList<ParseQuery<ParseObject>>();
-//        queries.add(myQuery1);
-//        queries.add(myQuery2);
-//        ParseQuery<ParseObject> mainQuery = ParseQuery.or(queries);
         myQuery1.include("from");
         myQuery1.include("to");
         myQuery1.findInBackground(new FindCallback<ParseObject>() {
@@ -74,23 +68,10 @@ public class AddFriendFragment extends Fragment {
                 //query success
                 if (e == null) {
                     if(objects.size()!=0){
-                        for(ParseObject o :objects){
 
-                            if(!ParseUser.getCurrentUser().getUsername().equals(o.getParseObject("to").getString("username"))){
-                                parseUsers.add((ParseUser)o.getParseObject("to"));
-                                Log.d("testFore","to = "+o.getParseObject("to").getString("faceName"));
-                            }
-                            else if(!ParseUser.getCurrentUser().getUsername().equals(o.getParseObject("from").getString("username"))){
-                                parseUsers.add((ParseUser)o.getParseObject("from"));
-                                Log.d("testFore","from = "+o.getParseObject("from").getString("faceName"));
-                            }
-                            else {
-                                Log.d("testFore","form = to = Currentuser = "+o.getParseObject("from").getString("faceName")+o.getParseObject("to").getString("faceName"));
-                            }
-                        }
                         Log.d("testFore",parseUsers.toString());
                         //setup adapter
-                        setUpAdapter(parseUsers);
+                        setUpAdapter(objects);
 
                     }
                 } else {
@@ -102,14 +83,15 @@ public class AddFriendFragment extends Fragment {
 
     }
 
-    public void setUpAdapter(List<ParseUser> follows)
+    public void setUpAdapter(List<ParseObject> follows)
     {
         recyclerView=(RecyclerView)getView().findViewById(R.id.addFriend_RecyclerView);
 
         linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setHasFixedSize(true);
-        adapter = new AddFriendAdapter(follows,getContext());
+        adapter = new AddFriendAdapter(follows,getContext(),this);
+
         recyclerView.setAdapter(adapter);
     }
 
