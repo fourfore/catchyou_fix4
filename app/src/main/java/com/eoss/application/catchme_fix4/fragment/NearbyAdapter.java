@@ -23,6 +23,7 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -30,7 +31,7 @@ import java.util.Objects;
  * Created by Foremost on 31/8/2559.
  */
 public class NearbyAdapter extends RecyclerView.Adapter<NearbyAdapter.NearbyViewHolder> {
-
+    boolean checkSave;
     public static class NearbyViewHolder extends RecyclerView.ViewHolder {
 
 //        CardView cv;
@@ -84,50 +85,63 @@ public class NearbyAdapter extends RecyclerView.Adapter<NearbyAdapter.NearbyView
         //personViewHolder.gender.setText(parseUsers.get(position).getString("gender"));
         Picasso.with(c).load(parseUsers.get(position).getString("profilePicUrl")).into(personViewHolder.photo);
         personViewHolder.requestToggle.setText("Send Request");
+
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Follow");
         query.whereEqualTo("from",ParseUser.getCurrentUser());
         query.whereEqualTo("to",parseUsers.get(position));
+
+        Log.d("TestQuery",parseUsers.get(position).toString());
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> objects, ParseException e) {
-                if (e == null ) {
-                    for(ParseObject o : objects)
-                    {
+                if(objects.size() != 0) {
+                    if (e == null) {
+                        for (ParseObject o : objects) {
 
-                        if(o.getInt("status") == 0){
-                            //personViewHolder.requestToggle.setChecked(true);
-                            Log.d("passtest1","passtest");
-                        }
-                        else
-                        {
-                            //personViewHolder.requestToggle.setChecked(false);
-                        }
+                            if (o.getInt("status") == 0) {
+                                checkSave = true;
+                                personViewHolder.requestToggle.setChecked(true);
 
+                                Log.d("TestQueryStatus", o.get("status").toString());
+
+                            } else {
+                                checkSave = false;
+                                personViewHolder.requestToggle.setChecked(false);
+
+                            }
+
+                        }
+                        //Log.d("score", "Retrieved " + scoreList.size() + " scores");
+                    } else {
+                        Log.d("score", "Error: " + e.getMessage());
                     }
-                    //Log.d("score", "Retrieved " + scoreList.size() + " scores");
-                } else {
-                    Log.d("score", "Error: " + e.getMessage());
+                }else {
+                    Log.d("TestQuery", "Object null");
                 }
             }
+
         });
         personViewHolder.requestToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(b == true)
                 {
-                    ParseObject follow = new ParseObject("Follow");
-                    follow.put("from",ParseUser.getCurrentUser());
-                    follow.put("to", parseUsers.get(position));
-                    follow.put("status",0);
+                    if(checkSave != true) {
+                        ParseObject follow = new ParseObject("Follow");
+                        follow.put("from", ParseUser.getCurrentUser());
+                        follow.put("to", parseUsers.get(position));
+                        follow.put("status", 0);
 
-                    ParseACL acl=new ParseACL();
-                    acl.setPublicReadAccess(true);
-                    acl.setWriteAccess(ParseUser.getCurrentUser(),true);
-                    follow.setACL(acl);
-                    follow.saveInBackground();
-
+                        ParseACL acl = new ParseACL();
+                        acl.setPublicReadAccess(true);
+                        acl.setWriteAccess(ParseUser.getCurrentUser(), true);
+                        follow.setACL(acl);
+                        follow.saveInBackground();
+                        checkSave = false;
+                    }
                     Log.d("Foreb","Request Sent"+parseUsers.get(position).getString("faceName"));
                     personViewHolder.requestToggle.setTextOn("Request Sent");
                     Log.d("passtest1","true");
+
 //                    follow.put("from",ParseUser.getCurrentUser());
 //                    follow.put("to", parseUsers.get(position));
                 }
